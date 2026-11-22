@@ -21,6 +21,15 @@ function formatarTexto(t) {
     .replace(/\n/g, "<br>");
 }
 
+// "Novos 5 · Aprender 1 · Revisar 12" com cores
+function htmlContadores(c) {
+  return (
+    'Novos <b class="c-novo">' + c.novos + "</b> · " +
+    'Aprender <b class="c-aprender">' + c.aprender + "</b> · " +
+    'Revisar <b class="c-revisar">' + c.revisar + "</b>"
+  );
+}
+
 // ---------- Navegação entre telas ----------
 function mostrarTela(nome) {
   document.querySelectorAll(".tela").forEach((t) => t.classList.remove("ativa"));
@@ -39,6 +48,7 @@ document.querySelectorAll("nav button").forEach((b) => {
   b.addEventListener("click", () => {
     mostrarTela(b.dataset.tela);
     if (b.dataset.tela === "decks") renderizarDecks();
+    if (b.dataset.tela === "estudo") renderizarEstudo();
   });
 });
 
@@ -70,7 +80,9 @@ async function renderizarDecks() {
   document.getElementById("vazio-decks").classList.toggle("oculto", decks.length > 0);
 
   for (const deck of decks) {
-    const qtd = await contarCards(deck.id);
+    const cardsDoDeck = await listarCards(deck.id);
+    const qtd = cardsDoDeck.length;
+    const pend = contarPendentes(cardsDoDeck);
 
     const item = document.createElement("div");
     item.className = "deck-item";
@@ -83,7 +95,10 @@ async function renderizarDecks() {
     const contador = document.createElement("span");
     contador.className = "deck-qtd";
     contador.textContent = qtd + (qtd === 1 ? " cartão" : " cartões");
-    info.append(nome, contador);
+    const pendentes = document.createElement("span");
+    pendentes.className = "deck-qtd";
+    pendentes.innerHTML = htmlContadores(pend);
+    info.append(nome, contador, pendentes);
     info.addEventListener("click", () => abrirDeck(deck));
 
     const btnEditar = document.createElement("button");
@@ -155,6 +170,8 @@ function abrirDeck(deck) {
 async function renderizarCards() {
   const cards = await listarCards(deckAberto.id);
   cards.sort((a, b) => a.criadoEm - b.criadoEm);
+
+  document.getElementById("deck-contadores").innerHTML = htmlContadores(contarPendentes(cards));
 
   const lista = document.getElementById("lista-cards");
   lista.innerHTML = "";
@@ -255,10 +272,61 @@ document.getElementById("btn-salvar-card").addEventListener("click", salvarModal
 document.getElementById("btn-apagar-card").addEventListener("click", apagarModalCard);
 document.getElementById("btn-cancelar-card").addEventListener("click", fecharModalCard);
 
-// ---------- Estudo ----------
-let sessao = null; // { fila, respondidos, revelado }
+// ---------- Aba Estudar (decks com contadores) ----------
+async function renderizarEstudo() {
+  const decks = await listarDecks();
+  decks.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 
-async function iniciarEstudo() {
+  const lista = document.getElementById("lista-estudo");
+  lista.innerHTML = "";
+  document.getElementById("estudo-nada").classList.toggle("oculto", decks.length > 0);
+
+  let totalHoje = 0;
+
+  for (const deck of decks) {
+    const cards = await listarCards(deck.id);
+    const c = contarPendentes(cards);
+    const total = c.novos + c.aprender + c.revisar;
+    totalHoje += total;
+
+    const item = document.createElement("div");
+    item.className = "deck-item";
+
+    const info = document.createElement("div");
+    info.className = "deck-info";
+    const nome = document.createElement("span");
+    nome.className = "deck-nome";
+    nome.textContent = deck.nome;
+    const pendentes = document.createElement("span");
+    pendentes.className = "deck-qtd";
+    pendentes.innerHTML = htmlContadores(c);
+    info.append(nome, pendentes);
+
+    const btn = document.createElement("button");
+    btn.className = "btn-estudar-deck";
+    btn.textContent = "Estudar";
+    btn.disabled = total === 0;
+    btn.addEventListener("click", () => iniciarEstudo(deck, "tab"));
+
+    item.append(info, btn);
+    lista.appendChild(item);
+  }
+
+  const resumo = document.getElementById("resumo-hoje");
+  if (decks.length === 0) {
+    resumo.textContent = "";
+  } else if (totalHoje === 0) {
+    resumo.textContent = "Tudo em dia por hoje 🎉";
+  } else {
+    resumo.textContent = totalHoje + (totalHoje === 1 ? " cartão" : " cartões") + " para estudar hoje";
+  }
+}
+
+// ---------- Estudo ----------
+let sessao = null; // { fila, respondidos, revelado, origem }
+
+async function iniciarEstudo(deck, origem) {
+  if (deck) deckAberto = deck;
   const cards = await listarCards(deckAberto.id);
 
   if (cards.length === 0) {
@@ -272,7 +340,7 @@ async function iniciarEstudo() {
     return;
   }
 
-  sessao = { fila, respondidos: 0, revelado: false };
+  sessao = { fila, respondidos: 0, revelado: false, origem: origem || "deck" };
   document.body.classList.add("estudando");
   mostrarTela("estudo");
   document.getElementById("titulo").textContent = deckAberto.nome;
@@ -347,17 +415,25 @@ function terminarEstudo() {
 }
 
 function sairDoEstudo() {
+  const origem = sessao ? sessao.origem : "deck";
   sessao = null;
+
   document.body.classList.remove("estudando");
   document.getElementById("estudo-sessao").classList.add("oculto");
   document.getElementById("estudo-acoes").classList.add("oculto");
   document.getElementById("estudo-fim").classList.add("oculto");
   document.getElementById("estudo-vazio").classList.remove("oculto");
-  mostrarTela("deck");
-  renderizarCards();
+
+  if (origem === "tab") {
+    mostrarTela("estudo");
+    renderizarEstudo();
+  } else {
+    mostrarTela("deck");
+    renderizarCards();
+  }
 }
 
-document.getElementById("btn-estudar").addEventListener("click", iniciarEstudo);
+document.getElementById("btn-estudar").addEventListener("click", () => iniciarEstudo(null, "deck"));
 document.getElementById("estudo-card").addEventListener("click", revelarResposta);
 document.getElementById("btn-mostrar").addEventListener("click", revelarResposta);
 document.getElementById("btn-sair-estudo").addEventListener("click", sairDoEstudo);
@@ -365,6 +441,7 @@ document.getElementById("btn-fim-estudo").addEventListener("click", sairDoEstudo
 document.querySelectorAll(".nota").forEach((b) => {
   b.addEventListener("click", () => responder(Number(b.dataset.nota)));
 });
+
 // ---------- Início ----------
 async function iniciar() {
   aplicarTema(localStorage.getItem("tema") || "escuro");
