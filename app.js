@@ -220,7 +220,9 @@ async function renderizarCards() {
   const cards = await listarCards(deckAberto.id);
   cards.sort((a, b) => a.criadoEm - b.criadoEm);
 
-  document.getElementById("deck-contadores").innerHTML = htmlContadores(contarPendentes(cards));
+    const feitosMapa = await feitosHojePorDeck();
+  document.getElementById("deck-contadores").innerHTML =
+    htmlContadores(contarPendentes(cards, feitosDoDeck(feitosMapa, deckAberto.id)));
 
   // Filtro da busca
   const busca = inputBusca.value.trim();
