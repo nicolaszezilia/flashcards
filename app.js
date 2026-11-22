@@ -204,6 +204,12 @@ inputBusca.addEventListener("input", () => {
 
 // ---------- Tela de um deck (lista de cartões) ----------
 function abrirDeck(deck) {
+  function abrirDeck(deck) {
+  inputBusca.value = "";
+  deckAberto = deck;
+  mostrarTela("deck");
+  renderizarCards();
+}
   deckAberto = deck;
   mostrarTela("deck");
   renderizarCards();
