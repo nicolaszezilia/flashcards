@@ -190,6 +190,17 @@ async function renderizarCards() {
     verso.innerHTML = formatarTexto(card.verso);
 
     item.append(frente, verso);
+        if (card.tags && card.tags.length) {
+      const linhaTags = document.createElement("div");
+      linhaTags.className = "card-tags";
+      card.tags.forEach((t) => {
+        const chip = document.createElement("span");
+        chip.className = "tag";
+        chip.textContent = t;
+        linhaTags.appendChild(chip);
+      });
+      item.appendChild(linhaTags);
+    }
     item.addEventListener("click", () => abrirModalCard(card));
     lista.appendChild(item);
   });
