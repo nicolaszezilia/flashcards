@@ -20,7 +20,25 @@ function formatarTexto(t) {
     .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
     .replace(/\n/g, "<br>");
 }
+// ---------- Cloze (lacunas) ----------
+// Formato: {{c1::resposta}} ou {{c1::resposta::dica}}
+const REGEX_CLOZE = /\{\{c\d+::(.+?)(?:::(.+?))?\}\}/gs;
 
+const ehCloze = (card) => card.tipo === "cloze";
+
+function temCloze(t) {
+  return /\{\{c\d+::.+?\}\}/s.test(t);
+}
+
+// revelar = false: mostra [...] ; revelar = true: mostra a resposta em destaque
+function formatarCloze(t, revelar) {
+  const html = escaparHtml(t).replace(REGEX_CLOZE, (_, resp, dica) =>
+    revelar
+      ? '<span class="lacuna-resp">' + resp + "</span>"
+      : '<span class="lacuna">[' + (dica || "...") + "]</span>"
+  );
+  return html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>");
+}
 // "Novos 5 · Aprender 1 · Revisar 12" com cores
 function htmlContadores(c) {
   return (
