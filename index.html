@@ -26,8 +26,36 @@
       <div id="lista-cards"></div>
       <button id="btn-novo-card" class="fab" aria-label="Novo cartão">+</button>
     </section>
-    <section id="tela-estudo" class="tela">
-      <p class="vazio">Aqui ficará a tela de estudo.</p>
+        <section id="tela-estudo" class="tela">
+      <p id="estudo-vazio" class="vazio">Abra um deck e toque em<br><b>Estudar</b> para começar.</p>
+
+      <div id="estudo-sessao" class="oculto">
+        <div class="estudo-topo">
+          <button id="btn-sair-estudo" class="btn-voltar">✕ Sair</button>
+          <span id="estudo-progresso"></span>
+        </div>
+        <div id="estudo-card" class="estudo-card">
+          <div id="estudo-frente"></div>
+          <hr id="estudo-linha" class="oculto">
+          <div id="estudo-verso" class="oculto"></div>
+        </div>
+      </div>
+
+      <div id="estudo-fim" class="estudo-fim oculto">
+        <h2>Sessão concluída 🎉</h2>
+        <p id="estudo-resumo" class="vazio"></p>
+        <button id="btn-fim-estudo" class="btn principal">Voltar ao deck</button>
+      </div>
+
+      <div id="estudo-acoes" class="estudo-acoes oculto">
+        <button id="btn-mostrar" class="btn principal">Mostrar resposta</button>
+        <div id="notas" class="notas oculto">
+          <button class="nota errei" data-nota="0">Errei<small id="prev-0"></small></button>
+          <button class="nota dificil" data-nota="1">Difícil<small id="prev-1"></small></button>
+          <button class="nota bom" data-nota="2">Bom<small id="prev-2"></small></button>
+          <button class="nota facil" data-nota="3">Fácil<small id="prev-3"></small></button>
+        </div>
+      </div>
     </section>
 
     <section id="tela-ajustes" class="tela">
