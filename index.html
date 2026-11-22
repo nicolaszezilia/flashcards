@@ -38,7 +38,15 @@
     <button data-tela="estudo">🧠<span>Estudar</span></button>
     <button data-tela="ajustes">⚙️<span>Ajustes</span></button>
   </nav>
-
+  <div id="modal" class="modal oculto">
+    <div class="modal-caixa">
+      <h2 id="modal-titulo">Novo deck</h2>
+      <input id="input-nome" type="text" placeholder="Nome do deck" maxlength="60" autocomplete="off">
+      <button id="btn-salvar" class="btn principal">Salvar</button>
+      <button id="btn-apagar" class="btn perigo oculto">Apagar deck</button>
+      <button id="btn-cancelar" class="btn">Cancelar</button>
+    </div>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
