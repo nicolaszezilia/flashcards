@@ -77,3 +77,37 @@ const salvarCard = (card) => transacao("cards", "readwrite", (s) => s.put(card))
 const apagarCard = (id) => transacao("cards", "readwrite", (s) => s.delete(id));
 
 const salvarRevisao = (rev) => transacao("revisoes", "readwrite", (s) => s.add(rev));
+
+// Lê tudo que está guardado, para o backup
+async function exportarTudo() {
+  const db = await abrirBanco();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(["decks", "cards", "revisoes"], "readonly");
+    const saida = {};
+    ["decks", "cards", "revisoes"].forEach((nome) => {
+      const req = tx.objectStore(nome).getAll();
+      req.onsuccess = () => {
+        saida[nome] = req.result;
+      };
+    });
+    tx.oncomplete = () => resolve(saida);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+// Apaga tudo e coloca o conteúdo do backup. Se der erro no meio,
+// nada muda (é uma operação "tudo ou nada").
+async function substituirTudo(dados) {
+  const db = await abrirBanco();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(["decks", "cards", "revisoes"], "readwrite");
+    ["decks", "cards", "revisoes"].forEach((nome) => {
+      const loja = tx.objectStore(nome);
+      loja.clear();
+      (dados[nome] || []).forEach((item) => loja.put(item));
+    });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
