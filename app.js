@@ -382,6 +382,7 @@ async function renderizarEstudo() {
   document.getElementById("estudo-nada").classList.toggle("oculto", decks.length > 0);
 
   let totalHoje = 0;
+  const feitosMapa = await feitosHojePorDeck();
 
   for (const deck of decks) {
     const cards = await listarCards(deck.id);
