@@ -366,6 +366,8 @@ function abrirModalCard(card = null) {
   document.getElementById("input-frente").value = card ? card.frente : "";
   document.getElementById("input-verso").value = card ? card.verso : "";
     inputTags.value = card && card.tags ? card.tags.join(" ") : "";
+    selectTipo.value = card && card.tipo === "cloze" ? "cloze" : "basico";
+  ajustarTipo();
   document.getElementById("btn-apagar-card").classList.toggle("oculto", !card);
   document.getElementById("modal-card").classList.remove("oculto");
   document.getElementById("input-frente").focus();
