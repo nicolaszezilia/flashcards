@@ -593,6 +593,9 @@ function revelarResposta() {
   sessao.revelado = true;
 
   const card = sessao.fila[0];
+    if (ehCloze(card)) {
+    document.getElementById("estudo-frente").innerHTML = formatarCloze(card.frente, true);
+  }
   document.getElementById("estudo-verso").classList.remove("oculto");
   document.getElementById("estudo-linha").classList.remove("oculto");
   document.getElementById("btn-mostrar").classList.add("oculto");
