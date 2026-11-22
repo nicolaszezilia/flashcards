@@ -555,6 +555,7 @@ document.getElementById("input-importar").addEventListener("change", (e) => {
 // ---------- Início ----------
 async function iniciar() {
   aplicarTema(localStorage.getItem("tema") || "escuro");
+  mostrarUltimoBackup();
   mostrarTela("decks");
 
   try {
