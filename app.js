@@ -252,10 +252,11 @@ async function salvarModalCard() {
     return;
   }
 
+   const tags = lerTags(inputTags.value);
   if (cardEmEdicao) {
-    await salvarCard({ ...cardEmEdicao, frente, verso });
+    await salvarCard({ ...cardEmEdicao, frente, verso, tags });
   } else {
-    await salvarCard({ deckId: deckAberto.id, frente, verso, criadoEm: Date.now() });
+    await salvarCard({ deckId: deckAberto.id, frente, verso, tags, criadoEm: Date.now() });
   }
 
   fecharModalCard();
