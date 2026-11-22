@@ -423,8 +423,9 @@ async function renderizarEstudo() {
     const todasTags = new Set();
 
   for (const deck of decks) {
-    const cards = await listarCards(deck.id);
-     const c = contarPendentes(cards, feitosDoDeck(feitosMapa, deck.id));
+        const cards = await listarCards(deck.id);
+    cards.forEach((x) => (x.tags || []).forEach((t) => todasTags.add(t)));
+    const c = contarPendentes(cards, feitosDoDeck(feitosMapa, deck.id), Date.now(), filtroEstudo);
     const total = c.novos + c.aprender + c.revisar;
     totalHoje += total;
 
