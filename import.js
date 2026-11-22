@@ -182,6 +182,7 @@
 
     areaTexto.value = "";
     inpNovo.value = "";
+        $("imp-tags").value = "";
     previa.textContent = "";
     fundo.classList.add("imp-aberto");
   }
