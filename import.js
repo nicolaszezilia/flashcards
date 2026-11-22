@@ -223,7 +223,8 @@
         const k = chave(c.frente, c.verso);
         if (jaTem.has(k)) { repetidos++; return; }
         jaTem.add(k);
-        novos.push({ deckId, frente: c.frente, verso: c.verso, criadoEm: base + novos.length });
+                const tags = [...new Set([...c.tags, ...tagsLote])];
+        novos.push({ deckId, frente: c.frente, verso: c.verso, tags, criadoEm: base + novos.length });
       });
 
       await salvarVariosCards(novos);
