@@ -438,3 +438,27 @@ body.estudando main { padding-bottom: 250px; }
   color: inherit;
 }
 #filtro-estudo option { color: #000; }
+
+#barra-tipo { display: flex; gap: 8px; margin: 0 0 8px; }
+#select-tipo {
+  flex: 1;
+  min-height: 44px;
+  font-size: 16px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid #8886;
+  background: transparent;
+  color: inherit;
+}
+#select-tipo option { color: #000; }
+#btn-lacuna {
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #8886;
+  background: transparent;
+  color: inherit;
+}
+.lacuna, .lacuna-resp { font-weight: 700; color: #4da3ff; }
+.lacuna { background: #4da3ff22; border-radius: 6px; padding: 0 4px; }
