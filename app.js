@@ -221,11 +221,19 @@ async function renderizarCards() {
 
   document.getElementById("deck-contadores").innerHTML = htmlContadores(contarPendentes(cards));
 
+  // Filtro da busca
+  const busca = inputBusca.value.trim();
+  const visiveis = busca ? cards.filter((c) => cardCombina(c, busca)) : cards;
+  msgBusca.classList.toggle("oculto", !busca);
+  msgBusca.textContent = visiveis.length
+    ? visiveis.length + " de " + cards.length + (cards.length === 1 ? " cartão" : " cartões")
+    : "Nenhum cartão encontrado.";
+
   const lista = document.getElementById("lista-cards");
   lista.innerHTML = "";
   document.getElementById("vazio-cards").classList.toggle("oculto", cards.length > 0);
 
-  cards.forEach((card) => {
+  visiveis.forEach((card) => {
     const item = document.createElement("div");
     item.className = "card-item";
 
@@ -238,17 +246,25 @@ async function renderizarCards() {
     verso.innerHTML = formatarTexto(card.verso);
 
     item.append(frente, verso);
-        if (card.tags && card.tags.length) {
+
+    if (card.tags && card.tags.length) {
       const linhaTags = document.createElement("div");
       linhaTags.className = "card-tags";
       card.tags.forEach((t) => {
         const chip = document.createElement("span");
         chip.className = "tag";
         chip.textContent = t;
+        // Tocar na tag filtra por ela (sem abrir o cartão)
+        chip.addEventListener("click", (e) => {
+          e.stopPropagation();
+          inputBusca.value = "#" + t;
+          renderizarCards();
+        });
         linhaTags.appendChild(chip);
       });
       item.appendChild(linhaTags);
     }
+
     item.addEventListener("click", () => abrirModalCard(card));
     lista.appendChild(item);
   });
