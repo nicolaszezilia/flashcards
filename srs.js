@@ -109,3 +109,27 @@ function textoPrevia(card, nota) {
   }
   return (d / 365).toFixed(1).replace(".", ",") + " anos";
 }
+
+// Conta o que está pendente hoje, no mesmo critério de montarFila
+function contarPendentes(cards, agora = Date.now()) {
+  const amanha = somarDias(agora, 1);
+  let novos = 0;
+  let aprender = 0;
+  let revisar = 0;
+
+  for (const c of cards) {
+    const e = estadoDoCard(c);
+    if (e === "novo") novos++;
+    else if (e === "aprendendo") {
+      if (c.proxima <= agora) aprender++;
+    } else if (c.proxima < amanha) {
+      revisar++;
+    }
+  }
+
+  return {
+    novos: Math.min(novos, LIMITE_NOVOS_POR_SESSAO),
+    aprender: aprender,
+    revisar: revisar,
+  };
+}
