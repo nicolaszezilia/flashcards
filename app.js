@@ -435,9 +435,10 @@ async function iniciarEstudo(deck, origem) {
     return;
   }
 
-  const fila = montarFila(cards);
+    const feitosMapa = await feitosHojePorDeck();
+  const fila = montarFila(cards, feitosDoDeck(feitosMapa, deckAberto.id));
   if (fila.length === 0) {
-    alert("Nada para estudar neste deck agora. 🎉");
+    alert("Nada para estudar neste deck agora (ou o limite de hoje já foi atingido). 🎉");
     return;
   }
 
