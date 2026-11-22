@@ -400,3 +400,28 @@ body.estudando main { padding-bottom: 250px; }
 .tag {
   cursor: pointer;
 }
+
+.limites {
+  margin-top: 20px;
+}
+.limites h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.limites label {
+  display: block;
+  margin: 12px 0 4px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+.limites input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  font: inherit;
+  font-size: 16px;
+  color: inherit;
+  background: rgba(128, 128, 128, 0.12);
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  border-radius: 10px;
+}
