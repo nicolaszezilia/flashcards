@@ -105,3 +105,86 @@ nav button {
 
 nav button span { font-size: 12px; }
 nav button.ativo { color: var(--destaque); }
+
+.oculto { display: none !important; }
+
+.deck-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 0 8px 0 20px;
+  margin-bottom: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+}
+
+.deck-nome { font-size: 18px; }
+
+.deck-editar {
+  width: 56px;
+  height: 56px;
+  border: none;
+  background: none;
+  font-size: 22px;
+}
+
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: calc(env(safe-area-inset-bottom) + 84px);
+  width: 64px;
+  height: 64px;
+  border: none;
+  border-radius: 50%;
+  background: var(--destaque);
+  color: white;
+  font-size: 34px;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh 20px 20px;
+}
+
+.modal-caixa {
+  width: 100%;
+  max-width: 420px;
+  background: var(--superficie);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.modal-caixa input {
+  width: 100%;
+  font-size: 18px; /* 16px ou mais evita o zoom automático do iPhone */
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 2px solid var(--borda);
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+.btn {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 10px;
+  font-size: 18px;
+  border-radius: 14px;
+  border: 2px solid var(--borda);
+  background: none;
+  color: var(--texto);
+}
+
+.btn.principal { background: var(--destaque); border-color: var(--destaque); color: white; }
+.btn.perigo { color: #ff5c5c; border-color: #ff5c5c; }
