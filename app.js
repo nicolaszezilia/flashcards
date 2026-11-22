@@ -576,8 +576,10 @@ function mostrarProximoCard() {
   sessao.revelado = false;
 
   document.getElementById("estudo-progresso").textContent = "Restam " + sessao.fila.length;
-  document.getElementById("estudo-frente").innerHTML = formatarTexto(card.frente);
-  document.getElementById("estudo-verso").innerHTML = formatarTexto(card.verso);
+    document.getElementById("estudo-frente").innerHTML = ehCloze(card)
+    ? formatarCloze(card.frente, false)
+    : formatarTexto(card.frente);
+  document.getElementById("estudo-verso").innerHTML = formatarTexto(card.verso || "");
   document.getElementById("estudo-verso").classList.add("oculto");
   document.getElementById("estudo-linha").classList.add("oculto");
   document.getElementById("notas").classList.add("oculto");
