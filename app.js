@@ -442,6 +442,116 @@ document.querySelectorAll(".nota").forEach((b) => {
   b.addEventListener("click", () => responder(Number(b.dataset.nota)));
 });
 
+// ---------- Backup (exportar / importar) ----------
+function dataLocal() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+
+function mostrarUltimoBackup() {
+  const ts = Number(localStorage.getItem("ultimoBackup"));
+  document.getElementById("ultimo-backup").textContent = ts
+    ? "Último backup: " + new Date(ts).toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })
+    : "Você ainda não fez nenhum backup.";
+}
+
+function baixarArquivo(arquivo) {
+  const url = URL.createObjectURL(arquivo);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = arquivo.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+async function exportarBackup() {
+  try {
+    const dados = await exportarTudo();
+    const backup = {
+      app: "flashcards",
+      versao: 1,
+      exportadoEm: new Date().toISOString(),
+      decks: dados.decks,
+      cards: dados.cards,
+      revisoes: dados.revisoes,
+    };
+    const nome = "flashcards-backup-" + dataLocal() + ".json";
+    const arquivo = new File([JSON.stringify(backup)], nome, { type: "application/json" });
+
+    // No celular, abre a folha de compartilhar; no PC, baixa direto
+    const ehToque = window.matchMedia("(pointer: coarse)").matches;
+    let compartilhou = false;
+    if (ehToque && navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+      try {
+        await navigator.share({ files: [arquivo], title: "Backup Flashcards" });
+        compartilhou = true;
+      } catch (erro) {
+        if (erro.name === "AbortError") return; // você cancelou
+      }
+    }
+    if (!compartilhou) baixarArquivo(arquivo);
+
+    localStorage.setItem("ultimoBackup", String(Date.now()));
+    mostrarUltimoBackup();
+  } catch (erro) {
+    alert("Não consegui exportar: " + erro);
+  }
+}
+
+function validarBackup(d) {
+  if (!d || d.app !== "flashcards" || !Array.isArray(d.decks) || !Array.isArray(d.cards)) {
+    throw new Error("este arquivo não é um backup do Flashcards.");
+  }
+  const idsDecks = new Set();
+  for (const deck of d.decks) {
+    if (typeof deck.id !== "number" || typeof deck.nome !== "string") {
+      throw new Error("há um deck inválido no arquivo.");
+    }
+    idsDecks.add(deck.id);
+  }
+  for (const c of d.cards) {
+    if (
+      typeof c.id !== "number" ||
+      !idsDecks.has(c.deckId) ||
+      typeof c.frente !== "string" ||
+      typeof c.verso !== "string"
+    ) {
+      throw new Error("há um cartão inválido no arquivo.");
+    }
+  }
+}
+
+async function importarBackup(arquivo) {
+  try {
+    const dados = JSON.parse(await arquivo.text());
+    validarBackup(dados);
+
+    const aviso =
+      "Importar backup com " + dados.decks.length + " deck(s) e " + dados.cards.length +
+      " cartão(ões)?\n\nISSO APAGA tudo que está neste aparelho e coloca o conteúdo do backup no lugar.";
+    if (!confirm(aviso)) return;
+
+    await substituirTudo(dados);
+    deckAberto = null;
+    renderizarDecks();
+    alert("Backup importado com sucesso!");
+  } catch (erro) {
+    alert("Não consegui importar: " + erro.message);
+  }
+}
+
+document.getElementById("btn-exportar").addEventListener("click", exportarBackup);
+document.getElementById("btn-importar").addEventListener("click", () => {
+  document.getElementById("input-importar").click();
+});
+document.getElementById("input-importar").addEventListener("change", (e) => {
+  const arquivo = e.target.files[0];
+  e.target.value = ""; // permite escolher o mesmo arquivo de novo
+  if (arquivo) importarBackup(arquivo);
+});
 // ---------- Início ----------
 async function iniciar() {
   aplicarTema(localStorage.getItem("tema") || "escuro");
