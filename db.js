@@ -1,5 +1,5 @@
 const DB_NOME = "flashcards-db";
-const DB_VERSAO = 1;
+const DB_VERSAO = 2;
 let _db = null;
 
 function abrirBanco() {
@@ -16,6 +16,9 @@ function abrirBanco() {
       if (!db.objectStoreNames.contains("cards")) {
         const s = db.createObjectStore("cards", { keyPath: "id", autoIncrement: true });
         s.createIndex("deckId", "deckId", { unique: false });
+      }
+            if (!db.objectStoreNames.contains("revisoes")) {
+        db.createObjectStore("revisoes", { keyPath: "id", autoIncrement: true });
       }
     };
 
