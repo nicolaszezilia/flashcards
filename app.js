@@ -446,7 +446,7 @@ async function renderizarEstudo() {
     btn.className = "btn-estudar-deck";
     btn.textContent = "Estudar";
     btn.disabled = total === 0;
-    btn.addEventListener("click", () => iniciarEstudo(deck, "tab"));
+    btn.addEventListener("click", () => iniciarEstudo(deck, "tab", { ...filtroEstudo }));
 
     item.append(info, btn);
     lista.appendChild(item);
