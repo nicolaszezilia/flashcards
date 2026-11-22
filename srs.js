@@ -123,7 +123,8 @@ function textoPrevia(card, nota) {
 }
 
 // Conta o que está pendente hoje, no mesmo critério de montarFila
-function contarPendentes(cards, agora = Date.now()) {
+function contarPendentes(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now()) {
+  const lim = lerLimites();
   const amanha = somarDias(agora, 1);
   let novos = 0;
   let aprender = 0;
@@ -140,8 +141,8 @@ function contarPendentes(cards, agora = Date.now()) {
   }
 
   return {
-    novos: Math.min(novos, LIMITE_NOVOS_POR_SESSAO),
+    novos: Math.min(novos, Math.max(0, lim.novos - feitos.novos)),
     aprender: aprender,
-    revisar: revisar,
+    revisar: Math.min(revisar, Math.max(0, lim.revisoes - feitos.revisoes)),
   };
 }
