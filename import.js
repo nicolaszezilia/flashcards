@@ -45,6 +45,8 @@
         <button type="button" id="imp-escolher">📄 Escolher arquivo</button>
       </div>
       <input type="file" id="imp-arquivo" accept=".txt,.csv,.tsv,text/plain,text/csv" hidden>
+      <label for="imp-tags">Tags para todos os cartões (opcional)</label>
+      <input type="text" id="imp-tags" placeholder="ex.: cardio ecg" autocapitalize="none" autocomplete="off">
 
       <div class="imp-previa" id="imp-previa"></div>
 
