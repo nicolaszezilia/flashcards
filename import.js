@@ -105,10 +105,18 @@
       .trim();
   }
 
-  function interpretar(texto) {
+   function interpretar(texto) {
     texto = texto.replace(/^\uFEFF/, "");
     const primeira = texto.split("\n").find((l) => l.trim() && !l.startsWith("#")) || "";
     const sep = primeira.includes("\t") ? "\t" : ";";
+
+    // Cabeçalhos do Anki: quais colunas são especiais (tags, guid, tipo de nota...)
+    const especiais = new Set();
+    let colunaTags = -1;
+    for (const m of texto.matchAll(/^#(\w+) column:(\d+)/gm)) {
+      especiais.add(Number(m[2]) - 1);
+      if (m[1] === "tags") colunaTags = Number(m[2]) - 1;
+    }
 
     const cartoes = [];
     let ignoradas = 0;
@@ -117,11 +125,22 @@
       if (campos.length === 1 && campos[0].startsWith("#")) continue;     // cabeçalho do Anki
       if (campos.length < 2) { ignoradas++; continue; }
 
-      const frente = limparHtml(campos[0]);
-      // Com ";" tudo depois do primeiro ; é verso. Com Tab, só a 2ª coluna.
-      const verso = limparHtml(sep === ";" ? campos.slice(1).join(";") : campos[1]);
+      let frente, verso, tags = [];
+      if (sep === "\t") {
+        // Com Tab: frente e verso são as duas primeiras colunas que não são especiais
+        const idx = campos.map((_, i) => i).filter((i) => !especiais.has(i));
+        if (idx.length < 2) { ignoradas++; continue; }
+        frente = limparHtml(campos[idx[0]]);
+        verso = limparHtml(campos[idx[1]]);
+        if (colunaTags >= 0 && campos[colunaTags]) tags = lerTags(campos[colunaTags]);
+      } else {
+        // Com ";" tudo depois do primeiro ; é verso
+        frente = limparHtml(campos[0]);
+        verso = limparHtml(campos.slice(1).join(";"));
+      }
+
       if (!frente || !verso) { ignoradas++; continue; }
-      cartoes.push({ frente, verso });
+      cartoes.push({ frente, verso, tags });
     }
     return { cartoes, ignoradas };
   }
