@@ -21,24 +21,29 @@ function estadoDoCard(card) {
   return card.estado || "novo";
 }
 
-// Monta a fila de estudo: primeiro o que está vencido, depois os novos
-function montarFila(cards, agora = Date.now()) {
+// Monta a fila de estudo: o que está vencido, depois os novos,
+// respeitando o que ainda sobra do limite de hoje
+function montarFila(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now()) {
+  const lim = lerLimites();
+  const vagasNovos = Math.max(0, lim.novos - feitos.novos);
+  const vagasRev = Math.max(0, lim.revisoes - feitos.revisoes);
   const amanha = somarDias(agora, 1);
 
-  const pendentes = cards
-    .filter((c) => {
-      const e = estadoDoCard(c);
-      if (e === "aprendendo") return c.proxima <= agora;
-      if (e === "revisao") return c.proxima < amanha;
-      return false;
-    })
-    .sort((a, b) => a.proxima - b.proxima);
+  const aprendendo = cards.filter(
+    (c) => estadoDoCard(c) === "aprendendo" && c.proxima <= agora
+  );
+
+  const revisoes = cards
+    .filter((c) => estadoDoCard(c) === "revisao" && c.proxima < amanha)
+    .sort((a, b) => a.proxima - b.proxima)
+    .slice(0, vagasRev);
 
   const novos = cards
     .filter((c) => estadoDoCard(c) === "novo")
     .sort((a, b) => a.criadoEm - b.criadoEm)
-    .slice(0, LIMITE_NOVOS_POR_SESSAO);
+    .slice(0, vagasNovos);
 
+  const pendentes = [...aprendendo, ...revisoes].sort((a, b) => a.proxima - b.proxima);
   return [...pendentes, ...novos];
 }
 
