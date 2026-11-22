@@ -261,7 +261,8 @@ async function renderizarCards() {
     verso.className = "card-verso";
     verso.innerHTML = formatarTexto(card.verso);
 
-    item.append(frente, verso);
+        item.append(frente);
+    if (card.verso) item.append(verso);
 
     if (card.tags && card.tags.length) {
       const linhaTags = document.createElement("div");
