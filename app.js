@@ -451,12 +451,15 @@ async function renderizarEstudo() {
     item.append(info, btn);
     lista.appendChild(item);
   }
-
+  popularFiltro(todasTags);
   const resumo = document.getElementById("resumo-hoje");
   if (decks.length === 0) {
     resumo.textContent = "";
-  } else if (totalHoje === 0) {
-    resumo.textContent = "Tudo em dia por hoje 🎉";
+    } else if (totalHoje === 0) {
+    resumo.textContent =
+      filtroEstudo.tipo === "todos"
+        ? "Tudo em dia por hoje 🎉"
+        : "Nada pendente hoje neste filtro.";
   } else {
     resumo.textContent = totalHoje + (totalHoje === 1 ? " cartão" : " cartões") + " para estudar hoje";
   }
