@@ -58,8 +58,9 @@ function calcularRevisao(card, nota, agora = Date.now()) {
         facilidade = Math.max(1.3, facilidade - 0.15);
       } else if (nota === 2) {
         intervalo = Math.max(intervalo + 1, Math.round(intervalo * facilidade));
-      } else {
-        intervalo = Math.max(intervalo + 1, Math.round(intervalo * facilidade * 1.3));
+            } else {
+        const bom = Math.max(intervalo + 1, Math.round(intervalo * facilidade));
+        intervalo = Math.max(bom + 1, Math.round(intervalo * facilidade * 1.3));
         facilidade += 0.15;
       }
       novoEstado = "revisao";
