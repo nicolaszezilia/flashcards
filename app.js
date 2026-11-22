@@ -255,6 +255,116 @@ document.getElementById("btn-salvar-card").addEventListener("click", salvarModal
 document.getElementById("btn-apagar-card").addEventListener("click", apagarModalCard);
 document.getElementById("btn-cancelar-card").addEventListener("click", fecharModalCard);
 
+// ---------- Estudo ----------
+let sessao = null; // { fila, respondidos, revelado }
+
+async function iniciarEstudo() {
+  const cards = await listarCards(deckAberto.id);
+
+  if (cards.length === 0) {
+    alert("Este deck ainda não tem cartões. Crie alguns primeiro.");
+    return;
+  }
+
+  const fila = montarFila(cards);
+  if (fila.length === 0) {
+    alert("Nada para estudar neste deck agora. 🎉");
+    return;
+  }
+
+  sessao = { fila, respondidos: 0, revelado: false };
+  document.body.classList.add("estudando");
+  mostrarTela("estudo");
+  document.getElementById("titulo").textContent = deckAberto.nome;
+
+  document.getElementById("estudo-vazio").classList.add("oculto");
+  document.getElementById("estudo-fim").classList.add("oculto");
+  document.getElementById("estudo-sessao").classList.remove("oculto");
+  mostrarProximoCard();
+}
+
+function mostrarProximoCard() {
+  if (sessao.fila.length === 0) {
+    terminarEstudo();
+    return;
+  }
+
+  const card = sessao.fila[0];
+  sessao.revelado = false;
+
+  document.getElementById("estudo-progresso").textContent = "Restam " + sessao.fila.length;
+  document.getElementById("estudo-frente").innerHTML = formatarTexto(card.frente);
+  document.getElementById("estudo-verso").innerHTML = formatarTexto(card.verso);
+  document.getElementById("estudo-verso").classList.add("oculto");
+  document.getElementById("estudo-linha").classList.add("oculto");
+  document.getElementById("notas").classList.add("oculto");
+  document.getElementById("btn-mostrar").classList.remove("oculto");
+  document.getElementById("estudo-acoes").classList.remove("oculto");
+  window.scrollTo(0, 0);
+}
+
+function revelarResposta() {
+  if (!sessao || sessao.revelado) return;
+  sessao.revelado = true;
+
+  const card = sessao.fila[0];
+  document.getElementById("estudo-verso").classList.remove("oculto");
+  document.getElementById("estudo-linha").classList.remove("oculto");
+  document.getElementById("btn-mostrar").classList.add("oculto");
+  document.getElementById("notas").classList.remove("oculto");
+
+  [0, 1, 2, 3].forEach((n) => {
+    document.getElementById("prev-" + n).textContent = textoPrevia(card, n);
+  });
+}
+
+async function responder(nota) {
+  if (!sessao || !sessao.revelado) return;
+  sessao.revelado = false; // evita toque duplo
+
+  const card = sessao.fila.shift();
+  const atualizado = calcularRevisao(card, nota);
+
+  await salvarCard(atualizado);
+  await salvarRevisao({
+    cardId: card.id,
+    deckId: card.deckId,
+    nota: nota,
+    quando: Date.now(),
+  });
+
+  sessao.respondidos += 1;
+  if (atualizado.estado === "aprendendo") sessao.fila.push(atualizado);
+  mostrarProximoCard();
+}
+
+function terminarEstudo() {
+  document.getElementById("estudo-sessao").classList.add("oculto");
+  document.getElementById("estudo-acoes").classList.add("oculto");
+  document.getElementById("estudo-resumo").textContent =
+    "Você respondeu " + sessao.respondidos + " vezes nesta sessão.";
+  document.getElementById("estudo-fim").classList.remove("oculto");
+}
+
+function sairDoEstudo() {
+  sessao = null;
+  document.body.classList.remove("estudando");
+  document.getElementById("estudo-sessao").classList.add("oculto");
+  document.getElementById("estudo-acoes").classList.add("oculto");
+  document.getElementById("estudo-fim").classList.add("oculto");
+  document.getElementById("estudo-vazio").classList.remove("oculto");
+  mostrarTela("deck");
+  renderizarCards();
+}
+
+document.getElementById("btn-estudar").addEventListener("click", iniciarEstudo);
+document.getElementById("estudo-card").addEventListener("click", revelarResposta);
+document.getElementById("btn-mostrar").addEventListener("click", revelarResposta);
+document.getElementById("btn-sair-estudo").addEventListener("click", sairDoEstudo);
+document.getElementById("btn-fim-estudo").addEventListener("click", sairDoEstudo);
+document.querySelectorAll(".nota").forEach((b) => {
+  b.addEventListener("click", () => responder(Number(b.dataset.nota)));
+});
 // ---------- Início ----------
 async function iniciar() {
   aplicarTema(localStorage.getItem("tema") || "escuro");
