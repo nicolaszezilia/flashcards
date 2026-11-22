@@ -383,21 +383,28 @@ async function salvarModalCard() {
   const campoVerso = document.getElementById("input-verso");
   const frente = campoFrente.value.trim();
   const verso = campoVerso.value.trim();
+  const cloze = selectTipo.value === "cloze";
 
   if (!frente) {
     campoFrente.focus();
     return;
   }
-  if (!verso) {
+  if (cloze && !temCloze(frente)) {
+    alert("Marque pelo menos uma lacuna: selecione um trecho e toque em [...] Lacuna.");
+    campoFrente.focus();
+    return;
+  }
+  if (!cloze && !verso) {
     campoVerso.focus();
     return;
   }
 
-   const tags = lerTags(inputTags.value);
+  const tags = lerTags(inputTags.value);
+  const tipo = cloze ? "cloze" : "basico";
   if (cardEmEdicao) {
-    await salvarCard({ ...cardEmEdicao, frente, verso, tags });
+    await salvarCard({ ...cardEmEdicao, frente, verso, tags, tipo });
   } else {
-    await salvarCard({ deckId: deckAberto.id, frente, verso, tags, criadoEm: Date.now() });
+    await salvarCard({ deckId: deckAberto.id, frente, verso, tags, tipo, criadoEm: Date.now() });
   }
 
   fecharModalCard();
