@@ -20,7 +20,31 @@ function somarDias(ts, n) {
 function estadoDoCard(card) {
   return card.estado || "novo";
 }
+// Lê as tags do cartão, esteja ela guardada como lista ou como texto
+function tagsDoCard(card) {
+  let t = card.tags;
+  if (typeof t === "string") t = t.split(/[,;\s]+/);
+  if (!Array.isArray(t)) return [];
+  return t
+    .map((x) => String(x).trim().replace(/^#/, "").toLowerCase())
+    .filter(Boolean);
+}
 
+// filtro: { tipo: "todos" | "errados" | "tag", tag: "cardio" }
+function filtrarCards(cards, filtro) {
+  if (!filtro || filtro.tipo === "todos") return cards;
+
+  if (filtro.tipo === "errados") {
+    return cards.filter((c) => (c.erros ?? 0) > 0);
+  }
+
+  if (filtro.tipo === "tag") {
+    const alvo = String(filtro.tag || "").trim().replace(/^#/, "").toLowerCase();
+    return cards.filter((c) => tagsDoCard(c).includes(alvo));
+  }
+
+  return cards;
+}
 // Monta a fila de estudo: o que está vencido, depois os novos,
 // respeitando o que ainda sobra do limite de hoje
 function montarFila(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now()) {
