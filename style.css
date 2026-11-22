@@ -314,3 +314,31 @@ body.estudando main { padding-bottom: 250px; }
 .nota.dificil { color: #ff9f43; border-color: #ff9f43; }
 .nota.bom { color: #3ecf8e; border-color: #3ecf8e; }
 .nota.facil { color: var(--destaque); border-color: var(--destaque); }
+
+.c-novo { color: var(--destaque); }
+.c-aprender { color: #ff5c5c; }
+.c-revisar { color: #3ecf8e; }
+
+.contadores {
+  font-size: 15px;
+  color: var(--texto-suave);
+  margin-bottom: 16px;
+}
+
+.resumo-hoje {
+  font-size: 18px;
+  text-align: center;
+  margin: 4px 0 20px;
+}
+
+.btn-estudar-deck {
+  min-height: 48px;
+  padding: 0 18px;
+  margin-right: 8px;
+  border: none;
+  border-radius: 12px;
+  background: var(--destaque);
+  color: white;
+  font-size: 16px;
+}
+.btn-estudar-deck:disabled { opacity: 0.35; }
