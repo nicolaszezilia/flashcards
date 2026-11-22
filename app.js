@@ -311,6 +311,54 @@ function lerTags(texto) {
   });
   return [...vistos];
 }
+
+// ---------- Tipo do cartão: básico ou cloze ----------
+const barraTipo = document.createElement("div");
+barraTipo.id = "barra-tipo";
+
+const selectTipo = document.createElement("select");
+selectTipo.id = "select-tipo";
+selectTipo.setAttribute("aria-label", "Tipo de cartão");
+selectTipo.innerHTML =
+  '<option value="basico">Básico (frente e verso)</option>' +
+  '<option value="cloze">Cloze (lacuna)</option>';
+
+const btnLacuna = document.createElement("button");
+btnLacuna.type = "button";
+btnLacuna.id = "btn-lacuna";
+btnLacuna.textContent = "[...] Lacuna";
+btnLacuna.classList.add("oculto");
+
+barraTipo.append(selectTipo, btnLacuna);
+document.getElementById("input-frente").before(barraTipo);
+
+function ajustarTipo() {
+  const cloze = selectTipo.value === "cloze";
+  btnLacuna.classList.toggle("oculto", !cloze);
+  document.getElementById("input-frente").placeholder = cloze
+    ? "Ex.: A {{c1::insulina}} reduz a glicemia"
+    : "Frente";
+  document.getElementById("input-verso").placeholder = cloze
+    ? "Extra (opcional): explicação ou fonte"
+    : "Verso";
+}
+selectTipo.addEventListener("change", ajustarTipo);
+
+// Envolve o trecho selecionado na frente com {{c1:: }}
+function aplicarLacuna() {
+  const campo = document.getElementById("input-frente");
+  const ini = campo.selectionStart;
+  const fim = campo.selectionEnd;
+  if (ini === fim) {
+    alert("Primeiro selecione a palavra ou o trecho que vai virar lacuna.");
+    return;
+  }
+  const sel = campo.value.slice(ini, fim);
+  campo.value = campo.value.slice(0, ini) + "{{c1::" + sel + "}}" + campo.value.slice(fim);
+  campo.focus();
+  campo.setSelectionRange(ini + 6, ini + 6 + sel.length);
+}
+btnLacuna.addEventListener("click", aplicarLacuna);
 // ---------- Janela de criar / editar cartão ----------
 function abrirModalCard(card = null) {
   cardEmEdicao = card;
