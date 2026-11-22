@@ -372,6 +372,43 @@ document.getElementById("btn-salvar-card").addEventListener("click", salvarModal
 document.getElementById("btn-apagar-card").addEventListener("click", apagarModalCard);
 document.getElementById("btn-cancelar-card").addEventListener("click", fecharModalCard);
 
+// ---------- Filtro de estudo (todos / errados / tag) ----------
+let filtroEstudo = { tipo: "todos", tag: "" };
+
+const selectFiltro = document.createElement("select");
+selectFiltro.id = "filtro-estudo";
+selectFiltro.setAttribute("aria-label", "Filtro de estudo");
+document.getElementById("lista-estudo").before(selectFiltro);
+
+// Recria as opções (as tags mudam conforme seus cartões)
+function popularFiltro(tags) {
+  selectFiltro.innerHTML = "";
+  const add = (valor, texto) => {
+    const o = document.createElement("option");
+    o.value = valor;
+    o.textContent = texto;
+    selectFiltro.appendChild(o);
+  };
+  add("todos", "Todos os cartões do dia");
+  add("errados", "Só os que já errei");
+  [...tags]
+    .sort((a, b) => a.localeCompare(b, "pt-BR"))
+    .forEach((t) => add("tag:" + t, "Tag: #" + t));
+
+  const atual = filtroEstudo.tipo === "tag" ? "tag:" + filtroEstudo.tag : filtroEstudo.tipo;
+  const existe = [...selectFiltro.options].some((o) => o.value === atual);
+  if (!existe) filtroEstudo = { tipo: "todos", tag: "" };
+  selectFiltro.value = existe ? atual : "todos";
+}
+
+selectFiltro.addEventListener("change", () => {
+  const v = selectFiltro.value;
+  filtroEstudo = v.startsWith("tag:")
+    ? { tipo: "tag", tag: v.slice(4) }
+    : { tipo: v, tag: "" };
+  renderizarEstudo();
+});
+
 // ---------- Aba Estudar (decks com contadores) ----------
 async function renderizarEstudo() {
   const decks = await listarDecks();
