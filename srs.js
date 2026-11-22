@@ -47,7 +47,8 @@ function filtrarCards(cards, filtro) {
 }
 // Monta a fila de estudo: o que está vencido, depois os novos,
 // respeitando o que ainda sobra do limite de hoje
-function montarFila(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now()) {
+function montarFila(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now(), filtro = null) {
+  cards = filtrarCards(cards, filtro);
   const lim = lerLimites();
   const vagasNovos = Math.max(0, lim.novos - feitos.novos);
   const vagasRev = Math.max(0, lim.revisoes - feitos.revisoes);
