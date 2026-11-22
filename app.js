@@ -496,10 +496,11 @@ async function responder(nota) {
   const atualizado = calcularRevisao(card, nota);
 
   await salvarCard(atualizado);
-  await salvarRevisao({
+    await salvarRevisao({
     cardId: card.id,
     deckId: card.deckId,
     nota: nota,
+    estadoAntes: estadoDoCard(card),
     quando: Date.now(),
   });
 
