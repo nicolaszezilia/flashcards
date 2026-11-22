@@ -7,6 +7,7 @@ const ARQUIVOS = [
   "./style.css",
   "./app.js",
   "./import.js",
+  "./export.js",
   "./db.js",
   "./srs.js",
   "./manifest.json",
