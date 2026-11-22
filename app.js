@@ -420,6 +420,7 @@ async function renderizarEstudo() {
 
   let totalHoje = 0;
   const feitosMapa = await feitosHojePorDeck();
+    const todasTags = new Set();
 
   for (const deck of decks) {
     const cards = await listarCards(deck.id);
