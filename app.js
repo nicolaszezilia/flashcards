@@ -255,7 +255,7 @@ async function renderizarCards() {
 
     const frente = document.createElement("div");
     frente.className = "card-frente";
-    frente.innerHTML = formatarTexto(card.frente);
+    frente.innerHTML = ehCloze(card) ? formatarCloze(card.frente, true) : formatarTexto(card.frente);
 
     const verso = document.createElement("div");
     verso.className = "card-verso";
