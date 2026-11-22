@@ -77,6 +77,7 @@ async function renderizarDecks() {
 
   const lista = document.getElementById("lista-decks");
   lista.innerHTML = "";
+    const feitosMapa = await feitosHojePorDeck();
   document.getElementById("vazio-decks").classList.toggle("oculto", decks.length > 0);
 
   for (const deck of decks) {
