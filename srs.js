@@ -1,5 +1,12 @@
 const MIN = 60 * 1000;
-const LIMITE_NOVOS_POR_SESSAO = 20;
+// Limites diários (guardados em Ajustes). Padrão: 20 novos e 200 revisões.
+function lerLimites() {
+  const ler = (chave, padrao) => {
+    const v = localStorage.getItem(chave);
+    return v === null ? padrao : Number(v);
+  };
+  return { novos: ler("limiteNovos", 20), revisoes: ler("limiteRevisoes", 200) };
+}
 
 // Meia-noite de hoje + n dias
 function somarDias(ts, n) {
