@@ -75,3 +75,5 @@ const contarCards = (deckId) =>
 const salvarCard = (card) => transacao("cards", "readwrite", (s) => s.put(card));
 
 const apagarCard = (id) => transacao("cards", "readwrite", (s) => s.delete(id));
+
+const salvarRevisao = (rev) => transacao("revisoes", "readwrite", (s) => s.add(rev));
