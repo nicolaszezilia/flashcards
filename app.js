@@ -83,7 +83,7 @@ async function renderizarDecks() {
   for (const deck of decks) {
     const cardsDoDeck = await listarCards(deck.id);
     const qtd = cardsDoDeck.length;
-    const pend = contarPendentes(cardsDoDeck);
+    const pend = contarPendentes(cardsDoDeck, feitosDoDeck(feitosMapa, deck.id));
 
     const item = document.createElement("div");
     item.className = "deck-item";
