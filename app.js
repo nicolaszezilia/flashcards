@@ -200,6 +200,26 @@ document.getElementById("btn-voltar").addEventListener("click", () => {
   renderizarDecks();
 });
 
+// ---------- Tags ----------
+// Cria o campo de tags embaixo do verso, na janela do cartão
+const inputTags = document.createElement("input");
+inputTags.type = "text";
+inputTags.id = "input-tags";
+inputTags.placeholder = "Tags, separadas por espaço (ex.: cardio ecg)";
+inputTags.autocapitalize = "none";
+inputTags.autocomplete = "off";
+inputTags.setAttribute("aria-label", "Tags");
+document.getElementById("input-verso").after(inputTags);
+
+// "Cardio, #ECG  ecg" vira ["cardio", "ecg"]
+function lerTags(texto) {
+  const vistos = new Set();
+  texto.split(/[\s,;]+/).forEach((t) => {
+    t = t.replace(/^#+/, "").toLowerCase();
+    if (t) vistos.add(t);
+  });
+  return [...vistos];
+}
 // ---------- Janela de criar / editar cartão ----------
 function abrirModalCard(card = null) {
   cardEmEdicao = card;
