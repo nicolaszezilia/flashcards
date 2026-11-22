@@ -160,6 +160,48 @@ document.getElementById("input-nome").addEventListener("keydown", (e) => {
   if (e.key === "Enter") salvarModal();
 });
 
+// ---------- Busca nos cartões ----------
+const inputBusca = document.createElement("input");
+inputBusca.type = "search";
+inputBusca.id = "input-busca";
+inputBusca.placeholder = "Buscar (texto ou #tag)";
+inputBusca.autocapitalize = "none";
+inputBusca.autocomplete = "off";
+inputBusca.setAttribute("aria-label", "Buscar cartões");
+
+const msgBusca = document.createElement("p");
+msgBusca.id = "msg-busca";
+msgBusca.className = "oculto";
+
+const listaCardsEl = document.getElementById("lista-cards");
+listaCardsEl.before(inputBusca);
+listaCardsEl.before(msgBusca);
+
+// Tira acentos e maiúsculas: "Tríade" vira "triade"
+function semAcento(t) {
+  return t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Todas as palavras da busca precisam combinar.
+// Palavra com # procura nas tags; as outras procuram em frente, verso e tags.
+function cardCombina(card, busca) {
+  const termos = semAcento(busca).split(/\s+/).filter(Boolean);
+  const tags = (card.tags || []).map(semAcento);
+  const texto = semAcento(card.frente + " " + card.verso) + " " + tags.join(" ");
+  return termos.every((t) => {
+    if (t === "#") return true;
+    if (t.startsWith("#")) return tags.some((g) => g.startsWith(t.slice(1)));
+    return texto.includes(t);
+  });
+}
+
+// Espera 0,2 s depois da última tecla antes de filtrar
+let temporizadorBusca = null;
+inputBusca.addEventListener("input", () => {
+  clearTimeout(temporizadorBusca);
+  temporizadorBusca = setTimeout(renderizarCards, 200);
+});
+
 // ---------- Tela de um deck (lista de cartões) ----------
 function abrirDeck(deck) {
   deckAberto = deck;
