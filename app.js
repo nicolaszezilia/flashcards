@@ -226,6 +226,7 @@ function abrirModalCard(card = null) {
   document.getElementById("modal-card-titulo").textContent = card ? "Editar cartão" : "Novo cartão";
   document.getElementById("input-frente").value = card ? card.frente : "";
   document.getElementById("input-verso").value = card ? card.verso : "";
+    inputTags.value = card && card.tags ? card.tags.join(" ") : "";
   document.getElementById("btn-apagar-card").classList.toggle("oculto", !card);
   document.getElementById("modal-card").classList.remove("oculto");
   document.getElementById("input-frente").focus();
