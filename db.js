@@ -111,3 +111,16 @@ async function substituirTudo(dados) {
     tx.onabort = () => reject(tx.error);
   });
 }
+
+// Salva vários cartões de uma vez (rápido e "tudo ou nada")
+async function salvarVariosCards(lista) {
+  const db = await abrirBanco();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("cards", "readwrite");
+    const loja = tx.objectStore("cards");
+    lista.forEach((c) => loja.add(c));
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
