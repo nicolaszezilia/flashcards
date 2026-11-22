@@ -342,3 +342,11 @@ body.estudando main { padding-bottom: 250px; }
   font-size: 16px;
 }
 .btn-estudar-deck:disabled { opacity: 0.35; }
+
+.titulo-secao { margin-top: 32px; }
+
+.texto-suave {
+  color: var(--texto-suave);
+  font-size: 14px;
+  line-height: 1.5;
+}
