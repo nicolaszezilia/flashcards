@@ -3,35 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#121212">
   <title>Flashcards</title>
-  <style>
-    body {
-      font-family: -apple-system, sans-serif;
-      background: #121212;
-      color: #f0f0f0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-    button {
-      font-size: 20px;
-      padding: 18px 32px;
-      border: none;
-      border-radius: 14px;
-      background: #4f8cff;
-      color: white;
-      margin-top: 24px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Funcionou! 🎉</h1>
-  <p>Meu app de flashcards está no ar.</p>
-  <button onclick="this.textContent = 'JavaScript OK ✅'">Testar JavaScript</button>
+
+  <header>
+    <h1 id="titulo">Meus decks</h1>
+  </header>
+
+  <main>
+    <section id="tela-decks" class="tela">
+      <p class="vazio">Você ainda não tem decks.<br>Na próxima etapa vamos criar o primeiro.</p>
+    </section>
+
+    <section id="tela-estudo" class="tela">
+      <p class="vazio">Aqui ficará a tela de estudo.</p>
+    </section>
+
+    <section id="tela-ajustes" class="tela">
+      <h2>Tema</h2>
+      <div class="grupo-botoes">
+        <button class="botao-tema" data-tema="escuro">🌙 Escuro</button>
+        <button class="botao-tema" data-tema="claro">☀️ Claro</button>
+      </div>
+    </section>
+  </main>
+
+  <nav>
+    <button data-tela="decks">📚<span>Decks</span></button>
+    <button data-tela="estudo">🧠<span>Estudar</span></button>
+    <button data-tela="ajustes">⚙️<span>Ajustes</span></button>
+  </nav>
+
+  <script src="app.js"></script>
 </body>
 </html>
