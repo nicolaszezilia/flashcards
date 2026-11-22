@@ -468,7 +468,7 @@ async function renderizarEstudo() {
 // ---------- Estudo ----------
 let sessao = null; // { fila, respondidos, revelado, origem }
 
-async function iniciarEstudo(deck, origem) {
+async function iniciarEstudo(deck, origem, filtro = null) {
   if (deck) deckAberto = deck;
   const cards = await listarCards(deckAberto.id);
 
@@ -478,7 +478,7 @@ async function iniciarEstudo(deck, origem) {
   }
 
     const feitosMapa = await feitosHojePorDeck();
-  const fila = montarFila(cards, feitosDoDeck(feitosMapa, deckAberto.id));
+    const fila = montarFila(cards, feitosDoDeck(feitosMapa, deckAberto.id), Date.now(), filtro);
   if (fila.length === 0) {
     alert("Nada para estudar neste deck agora (ou o limite de hoje já foi atingido). 🎉");
     return;
