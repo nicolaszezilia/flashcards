@@ -62,3 +62,13 @@ async function apagarDeck(id) {
     tx.onerror = () => reject(tx.error);
   });
 }
+
+const listarCards = (deckId) =>
+  transacao("cards", "readonly", (s) => s.index("deckId").getAll(deckId));
+
+const contarCards = (deckId) =>
+  transacao("cards", "readonly", (s) => s.index("deckId").count(deckId));
+
+const salvarCard = (card) => transacao("cards", "readwrite", (s) => s.put(card));
+
+const apagarCard = (id) => transacao("cards", "readwrite", (s) => s.delete(id));
