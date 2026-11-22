@@ -148,7 +148,8 @@ function textoPrevia(card, nota) {
 }
 
 // Conta o que está pendente hoje, no mesmo critério de montarFila
-function contarPendentes(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now()) {
+function contarPendentes(cards, feitos = { novos: 0, revisoes: 0 }, agora = Date.now(), filtro = null) {
+  cards = filtrarCards(cards, filtro);
   const lim = lerLimites();
   const amanha = somarDias(agora, 1);
   let novos = 0;
