@@ -215,7 +215,8 @@
       // Pula cartões idênticos (mesma frente e mesmo verso) que já existem
       const chave = (f, v) => f + "\u0000" + v;
       const jaTem = new Set(existentes.map((c) => chave(c.frente.trim(), c.verso.trim())));
-      const base = Date.now();
+            const base = Date.now();
+      const tagsLote = lerTags($("imp-tags").value);
       const novos = [];
       let repetidos = 0;
       cartoes.forEach((c) => {
