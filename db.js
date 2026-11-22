@@ -124,3 +124,22 @@ async function salvarVariosCards(lista) {
     tx.onabort = () => reject(tx.error);
   });
 }
+
+// Quantos cartões novos e revisões já foram feitos hoje, por deck
+// Devolve algo como { 3: { novos: 5, revisoes: 12 } }
+async function feitosHojePorDeck() {
+  const todas = await transacao("revisoes", "readonly", (s) => s.getAll());
+  const inicio = somarDias(Date.now(), 0); // meia-noite de hoje
+  const mapa = {};
+  for (const r of todas) {
+    if (r.quando < inicio) continue;
+    if (!mapa[r.deckId]) mapa[r.deckId] = { novos: 0, revisoes: 0 };
+    if (r.estadoAntes === "novo") mapa[r.deckId].novos++;
+    else if (r.estadoAntes === "revisao") mapa[r.deckId].revisoes++;
+  }
+  return mapa;
+}
+
+function feitosDoDeck(mapa, deckId) {
+  return mapa[deckId] || { novos: 0, revisoes: 0 };
+}
