@@ -78,9 +78,10 @@
       const cards = await listarCards(deck.id);
       cards.sort((a, b) => a.criadoEm - b.criadoEm);
 
-      const linhas = ["#separator:tab", "#html:true"];
+            const linhas = ["#separator:tab", "#html:true", "#tags column:3"];
       cards.forEach((c) => {
-        linhas.push(campoAnki(c.frente) + "\t" + campoAnki(c.verso));
+        const tags = (c.tags || []).join(" ");
+        linhas.push(campoAnki(c.frente) + "\t" + campoAnki(c.verso) + "\t" + tags);
       });
 
       const nomeSeguro = deck.nome.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "") || "deck";
