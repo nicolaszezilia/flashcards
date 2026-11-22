@@ -188,3 +188,62 @@ nav button.ativo { color: var(--destaque); }
 
 .btn.principal { background: var(--destaque); border-color: var(--destaque); color: white; }
 .btn.perigo { color: #ff5c5c; border-color: #ff5c5c; }
+
+.deck-info { flex: 1; padding: 12px 0; }
+.deck-nome { display: block; }
+.deck-qtd {
+  display: block;
+  font-size: 14px;
+  color: var(--texto-suave);
+  margin-top: 2px;
+}
+
+.btn-voltar {
+  min-height: 48px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: var(--destaque);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.card-item {
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+}
+
+.card-frente, .card-verso {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.card-frente { font-size: 17px; }
+.card-verso { font-size: 14px; color: var(--texto-suave); margin-top: 6px; }
+
+.modal { overflow-y: auto; }
+#modal-card { padding-top: 4vh; }
+
+.modal-caixa label {
+  display: block;
+  font-size: 14px;
+  color: var(--texto-suave);
+  margin-bottom: 6px;
+}
+
+.modal-caixa textarea {
+  width: 100%;
+  font-size: 18px;
+  font-family: inherit;
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 2px solid var(--borda);
+  background: var(--fundo);
+  color: var(--texto);
+  resize: vertical;
+}
