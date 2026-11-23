@@ -859,3 +859,93 @@ nav button span {
   font-weight: 600;
   letter-spacing: 0.02em;
 }
+
+/* =====================================================
+   CAMADA VISUAL v2 · Etapa 3: tela de estudo
+   ===================================================== */
+
+/* ----- Topo da sessão ----- */
+#estudo-progresso {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.barra-sessao {
+  height: 6px;
+  margin: 0 0 16px;
+  border-radius: 999px;
+  background: var(--borda);
+  overflow: hidden;
+}
+#barra-sessao-fill {
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--destaque);
+  transition: width 0.4s ease;
+}
+
+/* ----- Cartão ----- */
+.estudo-card {
+  cursor: pointer;
+  min-height: 46vh;
+  padding: 26px 22px 30px;
+}
+.estudo-card.entra { animation: cartaoEntra 0.24s ease-out; }
+@keyframes cartaoEntra {
+  from { opacity: 0; transform: translateX(14px) scale(0.99); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Rótulos "Pergunta" / "Resposta" */
+#estudo-frente::before, #estudo-verso::before {
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--fonte-texto);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+#estudo-frente::before { content: "Pergunta"; color: var(--texto-suave); }
+#estudo-verso::before  { content: "Resposta";  color: var(--destaque); }
+
+/* Resposta: um pouco menor para textos longos */
+#estudo-verso { font-size: 19px; line-height: 1.55; }
+#estudo-verso:not(.oculto) { animation: revela 0.28s ease-out; }
+@keyframes revela {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.estudo-card hr { border-top-color: var(--borda-forte); }
+
+/* Lacuna (cloze) ganha um "pop" ao revelar */
+#estudo-frente .lacuna-resp { display: inline-block; animation: pop 0.3s ease-out; }
+@keyframes pop {
+  0%   { transform: scale(0.85); }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ----- Barra de ações (embaixo) ----- */
+#btn-mostrar { min-height: 64px; font-size: 19px; }
+
+.notas { gap: 10px; }
+.nota {
+  position: relative;
+  isolation: isolate;
+  min-height: 72px;
+  border-width: 1.5px;
+  font-size: 19px;
+}
+.nota::before {              /* fundo suave na cor da própria nota */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0.1;
+  transition: opacity 0.12s ease;
+}
+.nota:active::before { opacity: 0.24; }
+.nota small { font-size: 13px; font-weight: 500; opacity: 0.85; }
