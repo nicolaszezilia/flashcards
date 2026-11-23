@@ -1,4 +1,4 @@
-// import.js — Fase 2, Etapa 1: importar cartões de texto/CSV
+// import.js — importar cartões de texto/CSV (com suporte a subdecks "A::B::C")
 (function () {
   // ---------- Estilo (só desta janela) ----------
   const estilo = document.createElement("style");
@@ -32,11 +32,11 @@
   fundo.innerHTML = `
     <div class="imp-caixa">
       <h2>Importar cartões</h2>
-      <p class="imp-ajuda">Uma linha por cartão, no formato <b>frente;verso</b> (ou separado por Tab, como o Anki exporta). Aceita **negrito** e &lt;br&gt; para quebra de linha.</p>
+      <p class="imp-ajuda">Uma linha por cartão, no formato <b>frente;verso</b> (ou separado por Tab, como o Anki exporta). Aceita **negrito** e &lt;br&gt; para quebra de linha. Arquivos do Anki com coluna de deck (ex.: <b>Residência 2027::Cirurgia::CAD</b>) criam os subdecks sozinhos.</p>
 
-      <label for="imp-deck">Colocar no deck</label>
+      <label for="imp-deck">Colocar no deck (para cartões sem deck no arquivo)</label>
       <select id="imp-deck"></select>
-      <input type="text" id="imp-novo-deck" placeholder="Nome do novo deck" hidden>
+      <input type="text" id="imp-novo-deck" placeholder="Nome do novo deck (use :: para subdecks)" hidden>
 
       <label for="imp-texto">Cole o texto aqui</label>
       <textarea id="imp-texto" placeholder="Pergunta;Resposta"></textarea>
@@ -105,18 +105,32 @@
       .trim();
   }
 
-   function interpretar(texto) {
+  // "  Residência 2027 :: Cirurgia::CAD " vira "Residência 2027::Cirurgia::CAD"
+  function limparNomeDeck(t) {
+    return String(t || "")
+      .split("::")
+      .map((p) => p.trim())
+      .filter(Boolean)
+      .join("::");
+  }
+
+  function interpretar(texto) {
     texto = texto.replace(/^\uFEFF/, "");
     const primeira = texto.split("\n").find((l) => l.trim() && !l.startsWith("#")) || "";
     const sep = primeira.includes("\t") ? "\t" : ";";
 
-    // Cabeçalhos do Anki: quais colunas são especiais (tags, guid, tipo de nota...)
+    // Cabeçalhos do Anki: quais colunas são especiais (tags, deck, guid, tipo de nota...)
     const especiais = new Set();
     let colunaTags = -1;
+    let colunaDeck = -1;
     for (const m of texto.matchAll(/^#(\w+) column:(\d+)/gm)) {
       especiais.add(Number(m[2]) - 1);
       if (m[1] === "tags") colunaTags = Number(m[2]) - 1;
+      if (m[1] === "deck") colunaDeck = Number(m[2]) - 1;
     }
+    // "#deck:Nome" = um deck único para o arquivo inteiro
+    const fixo = texto.match(/^#deck:(.+)$/m);
+    const deckFixo = fixo ? limparNomeDeck(fixo[1]) : "";
 
     const cartoes = [];
     let ignoradas = 0;
@@ -125,7 +139,7 @@
       if (campos.length === 1 && campos[0].startsWith("#")) continue;     // cabeçalho do Anki
       if (campos.length < 2) { ignoradas++; continue; }
 
-      let frente, verso, tags = [];
+      let frente, verso, tags = [], deck = deckFixo;
       if (sep === "\t") {
         // Com Tab: frente e verso são as duas primeiras colunas que não são especiais
         const idx = campos.map((_, i) => i).filter((i) => !especiais.has(i));
@@ -133,6 +147,10 @@
         frente = limparHtml(campos[idx[0]]);
         verso = limparHtml(campos[idx[1]]);
         if (colunaTags >= 0 && campos[colunaTags]) tags = lerTags(campos[colunaTags]);
+        if (colunaDeck >= 0 && campos[colunaDeck]) {
+          const d = limparNomeDeck(campos[colunaDeck]);
+          if (d) deck = d;
+        }
       } else {
         // Com ";" tudo depois do primeiro ; é verso
         frente = limparHtml(campos[0]);
@@ -140,7 +158,7 @@
       }
 
       if (!frente || !verso) { ignoradas++; continue; }
-      cartoes.push({ frente, verso, tags });
+      cartoes.push({ frente, verso, tags, deck });
     }
     return { cartoes, ignoradas };
   }
@@ -152,10 +170,21 @@
 
     let html = "<b>" + cartoes.length + (cartoes.length === 1 ? " cartão encontrado" : " cartões encontrados") + "</b>";
     if (ignoradas) html += " · " + ignoradas + (ignoradas === 1 ? " linha ignorada" : " linhas ignoradas");
+
+    const comDeck = cartoes.filter((c) => c.deck);
+    if (comDeck.length) {
+      const nomes = new Set(comDeck.map((c) => c.deck.toLowerCase()));
+      html += "<div class=\"imp-ex\">" + comDeck.length + " cartão(ões) com deck indicado no arquivo, em " +
+        nomes.size + " deck(s) (os níveis que faltarem serão criados).</div>";
+      const semDeck = cartoes.length - comDeck.length;
+      if (semDeck) html += "<div class=\"imp-ex\">" + semDeck + " sem deck: vão para o deck escolhido acima.</div>";
+    }
+
     cartoes.slice(0, 3).forEach((c) => {
       const f = c.frente.replace(/\n/g, " ").slice(0, 60);
       const v = c.verso.replace(/\n/g, " ").slice(0, 60);
-      html += '<div class="imp-ex">' + escaparHtml(f) + " → " + escaparHtml(v) + "</div>";
+      html += '<div class="imp-ex">' + escaparHtml(f) + " → " + escaparHtml(v) +
+        (c.deck ? " <i>(" + escaparHtml(c.deck) + ")</i>" : "") + "</div>";
     });
     previa.innerHTML = html;
   }
@@ -163,12 +192,15 @@
   // ---------- Abrir / fechar ----------
   async function abrir() {
     const decks = await listarDecks();
-    decks.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    const lista = decks
+      .map((d) => ({ id: d.id, caminho: caminhoDoDeck(decks, d.id) }))
+      .sort((a, b) => a.caminho.localeCompare(b.caminho, "pt-BR"));
+
     selDeck.innerHTML = "";
-    decks.forEach((d) => {
+    lista.forEach((d) => {
       const o = document.createElement("option");
       o.value = d.id;
-      o.textContent = d.nome;
+      o.textContent = d.caminho;
       selDeck.appendChild(o);
     });
     const novo = document.createElement("option");
@@ -182,7 +214,7 @@
 
     areaTexto.value = "";
     inpNovo.value = "";
-        $("imp-tags").value = "";
+    $("imp-tags").value = "";
     previa.textContent = "";
     fundo.classList.add("imp-aberto");
   }
@@ -200,43 +232,68 @@
       return;
     }
 
+    // O deck escolhido na janela só é necessário para cartões sem deck no arquivo
+    const algumSemDeck = cartoes.some((c) => !c.deck);
+    if (algumSemDeck && selDeck.value === "novo" && !inpNovo.value.trim()) {
+      inpNovo.focus();
+      return;
+    }
+
     btnImportar.disabled = true; // evita toque duplo
     try {
-      let deckId;
-      let existentes = [];
-      if (selDeck.value === "novo") {
-        const nome = inpNovo.value.trim();
-        if (!nome) { inpNovo.focus(); return; }
-        deckId = await salvarDeck({ nome, criadoEm: Date.now() });
-      } else {
-        deckId = Number(selDeck.value);
-        existentes = await listarCards(deckId);
+      // Cria (se faltar) cada nível do caminho; guarda para não repetir a busca
+      const cacheDecks = new Map();
+      const idDoCaminho = async (caminho) => {
+        const k = caminho.toLowerCase();
+        if (!cacheDecks.has(k)) cacheDecks.set(k, await garantirCaminho(caminho));
+        return cacheDecks.get(k);
+      };
+
+      let deckPadrao = null;
+      if (algumSemDeck) {
+        deckPadrao =
+          selDeck.value === "novo"
+            ? await idDoCaminho(limparNomeDeck(inpNovo.value))
+            : Number(selDeck.value);
       }
 
-      // Pula cartões idênticos (mesma frente e mesmo verso) que já existem
+      // Agrupa os cartões pelo deck de destino
+      const grupos = new Map();
+      for (const c of cartoes) {
+        const id = c.deck ? await idDoCaminho(c.deck) : deckPadrao;
+        if (!grupos.has(id)) grupos.set(id, []);
+        grupos.get(id).push(c);
+      }
+
+      // Pula cartões idênticos (mesma frente e mesmo verso) que já existem no deck de destino
       const chave = (f, v) => f + "\u0000" + v;
-      const jaTem = new Set(existentes.map((c) => chave(c.frente.trim(), c.verso.trim())));
-            const base = Date.now();
+      const base = Date.now();
       const tagsLote = lerTags($("imp-tags").value);
       const novos = [];
       let repetidos = 0;
-      cartoes.forEach((c) => {
-        const k = chave(c.frente, c.verso);
-        if (jaTem.has(k)) { repetidos++; return; }
-        jaTem.add(k);
-                const tags = [...new Set([...c.tags, ...tagsLote])];
-        novos.push({ deckId, frente: c.frente, verso: c.verso, tags, criadoEm: base + novos.length });
-      });
+
+      for (const [deckId, lista] of grupos) {
+        const existentes = await listarCards(deckId);
+        const jaTem = new Set(existentes.map((c) => chave(c.frente.trim(), c.verso.trim())));
+        lista.forEach((c) => {
+          const k = chave(c.frente, c.verso);
+          if (jaTem.has(k)) { repetidos++; return; }
+          jaTem.add(k);
+          const tags = [...new Set([...c.tags, ...tagsLote])];
+          novos.push({ deckId, frente: c.frente, verso: c.verso, tags, criadoEm: base + novos.length });
+        });
+      }
 
       await salvarVariosCards(novos);
       fechar();
       renderizarDecks();
       alert(
-        novos.length + (novos.length === 1 ? " cartão importado." : " cartões importados.") +
+        novos.length + (novos.length === 1 ? " cartão importado" : " cartões importados") +
+        " em " + grupos.size + (grupos.size === 1 ? " deck." : " decks.") +
         (repetidos ? "\n" + repetidos + " repetido(s) foram ignorados." : "")
       );
     } catch (erro) {
-      alert("Não consegui importar: " + erro);
+      alert("Não consegui importar: " + (erro.message || erro));
     } finally {
       btnImportar.disabled = false;
     }
