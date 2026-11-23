@@ -126,7 +126,7 @@ async function renderizarDecks() {
 
     const btnEditar = document.createElement("button");
     btnEditar.className = "deck-editar";
-    btnEditar.textContent = "✏️";
+    btnEditar.innerHTML = '<svg class="ico"><use href="#i-editar"/></svg>';
     btnEditar.setAttribute("aria-label", "Editar deck");
     btnEditar.addEventListener("click", () => abrirModal(deck));
 
