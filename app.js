@@ -153,8 +153,12 @@ function somarContadores(ids, cardsMapa, feitosMapa, filtro = null) {
 }
 
 // Recuo da linha (máximo de 5 níveis, para não estourar a tela)
+// Subdecks ganham classes para ter cor própria: sub-1, sub-2, sub-3 (repete depois)
 function aplicarRecuo(item, nivel) {
   item.style.marginLeft = Math.min(nivel, 5) * 12 + "px";
+  if (nivel > 0) {
+    item.classList.add("sub", "sub-" + (((nivel - 1) % 3) + 1));
+  }
 }
 
 // Botão "−" / "+" ao lado do deck. Sem filhos: fica invisível, só para alinhar.
