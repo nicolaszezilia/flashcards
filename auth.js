@@ -7,7 +7,7 @@ import {
   sendPasswordResetEmail,
   signOut,
 } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
+import { iniciarNuvem, pararNuvem } from "./nuvem.js";
 const firebaseConfig = {
   apiKey: "AIzaSyBeGiiOqxB-KXgWmvsJmjau0c0PqxfjaNY",
   authDomain: "flashcards-124f8.firebaseapp.com",
