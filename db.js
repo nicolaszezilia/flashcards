@@ -2,6 +2,21 @@ const DB_NOME = "flashcards-db";
 const DB_VERSAO = 2;
 let _db = null;
 
+// ---------- Preparação para sincronizar ----------
+// Número único para cada deck, cartão e revisão (não se repete entre aparelhos)
+let _ultimoId = 0;
+function novoId() {
+  let id = Date.now() * 1000 + Math.floor(Math.random() * 1000);
+  if (id <= _ultimoId) id = _ultimoId + 1;
+  _ultimoId = id;
+  return id;
+}
+
+// Só fica verdadeiro quando a sincronização estiver ligada (etapa 4C-2)
+function nuvemPronta() {
+  return !!(window.nuvem && window.nuvem.pronta);
+}
+
 function abrirBanco() {
   return new Promise((resolve, reject) => {
     if (_db) return resolve(_db);
