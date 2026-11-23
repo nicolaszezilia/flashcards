@@ -191,7 +191,11 @@ async function aplicarRemoto(nome, d) {
 
     if (nome === "revisoes") {
       const loja = tx.objectStore("revisoes");
-      (dados.itens || []).forEach((r) => loja.put(r));
+            // Revisões nunca mudam: só entram as que ainda não existem aqui
+      (dados.itens || []).forEach((r) => {
+        const req = loja.add(r);
+        req.onerror = (ev) => ev.preventDefault();
+      });
     } else {
       const loja = tx.objectStore(nome);
       const id = Number(dados.id);
