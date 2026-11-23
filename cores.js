@@ -37,14 +37,15 @@
     return "rgba(" + (n >> 16) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
   }
 
-  // ---------- Estilo da seção (só desta janela) ----------
+  // ---------- Estilo (só desta janela) ----------
   const estiloUI = document.createElement("style");
   estiloUI.textContent = `
-  .cores-titulo{margin-top:32px}
-  .cores-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:12px;margin:12px 0 4px}
+  #btn-cor-layout{margin-top:14px}
+  .cor-ponto{width:20px;height:20px;border-radius:50%;background:var(--destaque);flex:none}
+  .cores-grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:12px;margin:14px 0 18px}
   .cor-bolinha{position:relative;width:44px;height:44px;padding:0;border-radius:50%;border:none;background:var(--c-e);justify-self:center}
   :root[data-tema="claro"] .cor-bolinha{background:var(--c-c)}
-  .cor-bolinha.ativa{box-shadow:0 0 0 3px var(--fundo),0 0 0 5px var(--texto)}
+  .cor-bolinha.ativa{box-shadow:0 0 0 3px var(--superficie),0 0 0 5px var(--texto)}
   .cor-bolinha.ativa::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:20px;font-weight:700;text-shadow:0 0 4px rgba(0,0,0,.55)}
   `;
   document.head.appendChild(estiloUI);
