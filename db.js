@@ -67,7 +67,8 @@ async function salvarDeck(deck) {
 // Apagar um deck também apaga todos os cartões dele
 async function apagarDeck(id) {
   const db = await abrirBanco();
-  return new Promise((resolve, reject) => {
+  const idsCards = [];
+  await new Promise((resolve, reject) => {
     const tx = db.transaction(["decks", "cards"], "readwrite");
     tx.objectStore("decks").delete(id);
 
@@ -76,6 +77,7 @@ async function apagarDeck(id) {
     cursor.onsuccess = () => {
       const c = cursor.result;
       if (c) {
+        idsCards.push(c.primaryKey);
         cards.delete(c.primaryKey);
         c.continue();
       }
@@ -84,6 +86,7 @@ async function apagarDeck(id) {
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
   });
+  if (nuvemPronta()) window.nuvem.apagarDeck(id, idsCards);
 }
 
 const listarCards = (deckId) =>
