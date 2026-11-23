@@ -149,15 +149,18 @@ async function substituirTudo(dados) {
 
 // Salva vários cartões de uma vez (rápido e "tudo ou nada")
 async function salvarVariosCards(lista) {
+  const agora = Date.now();
+  const cards = lista.map((c) => ({ ...c, id: c.id ?? novoId(), atualizadoEm: agora }));
   const db = await abrirBanco();
-  return new Promise((resolve, reject) => {
+  await new Promise((resolve, reject) => {
     const tx = db.transaction("cards", "readwrite");
     const loja = tx.objectStore("cards");
-    lista.forEach((c) => loja.add(c));
+    cards.forEach((c) => loja.put(c));
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
     tx.onabort = () => reject(tx.error);
   });
+  if (nuvemPronta()) window.nuvem.salvarVarios(cards);
 }
 
 // Quantos cartões novos e revisões já foram feitos hoje, por deck
