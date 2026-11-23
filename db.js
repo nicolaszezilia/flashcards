@@ -32,7 +32,7 @@ function abrirBanco() {
         const s = db.createObjectStore("cards", { keyPath: "id", autoIncrement: true });
         s.createIndex("deckId", "deckId", { unique: false });
       }
-            if (!db.objectStoreNames.contains("revisoes")) {
+      if (!db.objectStoreNames.contains("revisoes")) {
         db.createObjectStore("revisoes", { keyPath: "id", autoIncrement: true });
       }
     };
@@ -56,7 +56,17 @@ async function transacao(nomeStore, modo, operacao) {
   });
 }
 
-const listarDecks = () => transacao("decks", "readonly", (s) => s.getAll());
+// Lê os decks. Deck antigo (sem parentId) vira deck da raiz.
+// Deck cujo pai não existe mais também é tratado como raiz.
+async function listarDecks() {
+  const decks = await transacao("decks", "readonly", (s) => s.getAll());
+  const ids = new Set(decks.map((d) => d.id));
+  return decks.map((d) => ({
+    ...d,
+    parentId: d.parentId != null && ids.has(d.parentId) && d.parentId !== d.id ? d.parentId : null,
+  }));
+}
+
 async function salvarDeck(deck) {
   const d = { ...deck, id: deck.id ?? novoId(), atualizadoEm: Date.now() };
   await transacao("decks", "readwrite", (s) => s.put(d));
@@ -64,7 +74,7 @@ async function salvarDeck(deck) {
   return d.id;
 }
 
-// Apagar um deck também apaga todos os cartões dele
+// Apagar um deck também apaga todos os cartões dele (não mexe nos subdecks)
 async function apagarDeck(id) {
   const db = await abrirBanco();
   const idsCards = [];
@@ -87,6 +97,127 @@ async function apagarDeck(id) {
     tx.onerror = () => reject(tx.error);
   });
   if (nuvemPronta()) window.nuvem.apagarDeck(id, idsCards);
+}
+
+// ---------- Árvore de decks (subdecks) ----------
+// Filhos diretos de um deck (paiId = null devolve os decks da raiz), em ordem alfabética
+function filhosDe(decks, paiId) {
+  return decks
+    .filter((d) => (d.parentId ?? null) === paiId)
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+}
+
+// Id do deck + ids de todos os descendentes (filhos, netos...)
+function idsDaSubarvore(decks, id) {
+  const ids = [id];
+  for (let i = 0; i < ids.length; i++) {
+    decks.forEach((d) => {
+      if ((d.parentId ?? null) === ids[i] && !ids.includes(d.id)) ids.push(d.id);
+    });
+  }
+  return ids;
+}
+
+// "Cirurgia::Cirurgia Geral::Trauma"
+function caminhoDoDeck(decks, id) {
+  const partes = [];
+  const vistos = new Set();
+  let atual = decks.find((d) => d.id === id);
+  while (atual && !vistos.has(atual.id)) {
+    vistos.add(atual.id);
+    partes.unshift(atual.nome);
+    const paiId = atual.parentId ?? null;
+    atual = paiId === null ? null : decks.find((d) => d.id === paiId);
+  }
+  return partes.join("::");
+}
+
+// Já existe, dentro deste pai, um deck com esse nome? (ignora maiúsculas)
+function nomeDuplicado(decks, paiId, nome, ignorarId = null) {
+  const alvo = nome.trim().toLowerCase();
+  return decks.some(
+    (d) =>
+      d.id !== ignorarId &&
+      (d.parentId ?? null) === paiId &&
+      d.nome.trim().toLowerCase() === alvo
+  );
+}
+
+// Cria (se faltar) cada nível de "A::B::C" e devolve o id do último (usado na importação)
+async function garantirCaminho(caminho, paiId = null) {
+  const partes = caminho.split("::").map((p) => p.trim()).filter(Boolean);
+  if (partes.length === 0) throw new Error("Nome de deck vazio.");
+  let decks = await listarDecks();
+  let pai = paiId;
+  for (const nome of partes) {
+    const existente = decks.find(
+      (d) => (d.parentId ?? null) === pai && d.nome.trim().toLowerCase() === nome.toLowerCase()
+    );
+    if (existente) {
+      pai = existente.id;
+      continue;
+    }
+    pai = await salvarDeck({ nome, parentId: pai, criadoEm: Date.now() });
+    decks = await listarDecks();
+  }
+  return pai;
+}
+
+// Mover um deck (e tudo que está dentro dele) para outro pai; null = raiz
+async function moverDeck(id, novoPaiId) {
+  const decks = await listarDecks();
+  const deck = decks.find((d) => d.id === id);
+  if (!deck) throw new Error("Deck não encontrado.");
+  if (novoPaiId !== null && idsDaSubarvore(decks, id).includes(novoPaiId)) {
+    throw new Error("Não dá para mover um deck para dentro dele mesmo ou de um subdeck dele.");
+  }
+  if (nomeDuplicado(decks, novoPaiId, deck.nome, id)) {
+    throw new Error('Já existe um deck chamado "' + deck.nome + '" nesse destino.');
+  }
+  await salvarDeck({ ...deck, parentId: novoPaiId });
+}
+
+// Excluir um deck que pode ter subdecks.
+// modo "tudo": apaga o deck, todos os subdecks e todos os cartões.
+// modo "mover": os subdecks diretos e os cartões do deck vão para destinoId (null = raiz,
+// só vale se o deck não tiver cartões próprios) e só o deck é apagado.
+async function apagarDeckArvore(id, modo, destinoId = null) {
+  const decks = await listarDecks();
+  const sub = idsDaSubarvore(decks, id);
+
+  if (modo === "tudo") {
+    for (const x of [...sub].reverse()) await apagarDeck(x);
+    return;
+  }
+
+  if (destinoId !== null && sub.includes(destinoId)) {
+    throw new Error("O destino não pode estar dentro do deck que será apagado.");
+  }
+  const cards = await listarCards(id);
+  if (cards.length > 0 && destinoId === null) {
+    throw new Error("Escolha um deck para receber os cartões.");
+  }
+
+  // Subdecks diretos vão para o destino (se o nome já existir lá, vira "Nome (2)")
+  const filhos = decks.filter((d) => (d.parentId ?? null) === id);
+  const nomesNoDestino = decks
+    .filter((d) => (d.parentId ?? null) === destinoId)
+    .map((d) => d.nome.trim().toLowerCase());
+  for (const f of filhos) {
+    let nome = f.nome;
+    let n = 2;
+    while (nomesNoDestino.includes(nome.trim().toLowerCase())) {
+      nome = f.nome + " (" + n + ")";
+      n++;
+    }
+    nomesNoDestino.push(nome.trim().toLowerCase());
+    await salvarDeck({ ...f, nome, parentId: destinoId });
+  }
+
+  if (cards.length > 0) {
+    await salvarVariosCards(cards.map((c) => ({ ...c, deckId: destinoId })));
+  }
+  await apagarDeck(id);
 }
 
 const listarCards = (deckId) =>
@@ -181,6 +312,7 @@ async function feitosHojePorDeck() {
 function feitosDoDeck(mapa, deckId) {
   return mapa[deckId] || { novos: 0, revisoes: 0 };
 }
+
 // Aplica no aparelho uma alteração que veio da nuvem (usada na etapa 4C-2)
 async function aplicarRemoto(nome, d) {
   const db = await abrirBanco();
@@ -191,7 +323,7 @@ async function aplicarRemoto(nome, d) {
 
     if (nome === "revisoes") {
       const loja = tx.objectStore("revisoes");
-            // Revisões nunca mudam: só entram as que ainda não existem aqui
+      // Revisões nunca mudam: só entram as que ainda não existem aqui
       (dados.itens || []).forEach((r) => {
         const req = loja.add(r);
         req.onerror = (ev) => ev.preventDefault();
