@@ -107,7 +107,11 @@ async function apagarCard(id) {
   if (nuvemPronta()) window.nuvem.apagar("cards", id);
 }
 
-const salvarRevisao = (rev) => transacao("revisoes", "readwrite", (s) => s.add(rev));
+async function salvarRevisao(rev) {
+  const r = { ...rev, id: rev.id ?? novoId() };
+  await transacao("revisoes", "readwrite", (s) => s.put(r));
+  if (nuvemPronta()) window.nuvem.salvarRevisao(r);
+}
 
 // Lê tudo que está guardado, para o backup
 async function exportarTudo() {
