@@ -70,20 +70,20 @@
   let atual = localStorage.getItem(CHAVE) || PADRAO;
   aplicar(atual); // já na abertura do app
 
-  // ---------- Seção em Ajustes (entre Tema e Backup) ----------
-  const secao = document.createElement("div");
-  secao.innerHTML =
-    '<h2 class="cores-titulo">Cor do layout</h2>' +
+  /  // ---------- Janela com as cores ----------
+  const janela = document.createElement("div");
+  janela.className = "modal oculto";
+  janela.innerHTML =
+    '<div class="modal-caixa">' +
+    "<h2>Cor do layout</h2>" +
     '<p class="texto-suave" id="cor-nome"></p>' +
-    '<div class="cores-grade"></div>';
+    '<div class="cores-grade"></div>' +
+    '<button type="button" id="cor-fechar" class="btn principal">Pronto</button>' +
+    "</div>";
+  document.body.appendChild(janela);
 
-  const tela = document.getElementById("tela-ajustes");
-  const ref = tela.querySelector(".titulo-secao"); // o título "Backup"
-  if (ref) ref.before(secao);
-  else tela.appendChild(secao);
-
-  const grade = secao.querySelector(".cores-grade");
-  const rotulo = secao.querySelector("#cor-nome");
+  const grade = janela.querySelector(".cores-grade");
+  const rotulo = janela.querySelector("#cor-nome");
 
   function marcar() {
     rotulo.textContent = "Cor atual: " + achar(atual).nome;
@@ -111,5 +111,21 @@
     grade.appendChild(b);
   });
 
-  marcar();
+  const abrir = () => janela.classList.remove("oculto");
+  const fechar = () => janela.classList.add("oculto");
+  janela.querySelector("#cor-fechar").addEventListener("click", fechar);
+  janela.addEventListener("click", (e) => { if (e.target === janela) fechar(); });
+
+  // ---------- Botão em Ajustes (entre Tema e Backup) ----------
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.id = "btn-cor-layout";
+  botao.className = "btn";
+  botao.innerHTML = '<span class="cor-ponto"></span> Mudar cor do layout';
+  botao.addEventListener("click", () => { marcar(); abrir(); });
+
+  const tela = document.getElementById("tela-ajustes");
+  const ref = tela.querySelector(".titulo-secao"); // o título "Backup"
+  if (ref) ref.before(botao);
+  else tela.appendChild(botao);
 })();
