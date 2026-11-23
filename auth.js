@@ -123,7 +123,9 @@ const botaoSair = document.createElement("button");
 botaoSair.type = "button";
 botaoSair.id = "btn-sair-conta";
 botaoSair.textContent = "Sair da conta";
-blocoSair.append(textoConta, botaoSair);
+const textoSync = document.createElement("p");
+textoSync.id = "sync-status";
+blocoSair.append(textoConta, textoSync, botaoSair);
 document.getElementById("tela-ajustes").appendChild(blocoSair);
 
 botaoSair.addEventListener("click", async () => {
