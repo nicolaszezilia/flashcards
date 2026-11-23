@@ -86,7 +86,7 @@ function aplicarTema(tema) {
 
   document
     .querySelector('meta[name="theme-color"]')
-    .setAttribute("content", tema === "claro" ? "#F6F2EA" : "#0F1513");
+    .setAttribute("content", tema === "claro" ? "#F4F4F4" : "#0E0E0E");
 }
 
 document.querySelectorAll(".botao-tema").forEach((b) => {
