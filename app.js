@@ -773,6 +773,20 @@ document.getElementById("input-importar").addEventListener("change", (e) => {
   e.target.value = ""; // permite escolher o mesmo arquivo de novo
   if (arquivo) importarBackup(arquivo);
 });
+// ---------- Atualiza a tela quando chegam dados da nuvem ----------
+let temporizadorAtualizar = null;
+window.atualizarTela = function () {
+  clearTimeout(temporizadorAtualizar);
+  temporizadorAtualizar = setTimeout(() => {
+    if (sessao) return; // não interrompe um estudo em andamento
+    const ativa = document.querySelector(".tela.ativa");
+    if (!ativa) return;
+    const nome = ativa.id.replace("tela-", "");
+    if (nome === "decks") renderizarDecks();
+    else if (nome === "estudo") renderizarEstudo();
+    else if (nome === "deck" && deckAberto) renderizarCards();
+  }, 300);
+};
 // ---------- Início ----------
 async function iniciar() {
   aplicarTema(localStorage.getItem("tema") || "escuro");
