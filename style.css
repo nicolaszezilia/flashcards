@@ -588,3 +588,180 @@ html[data-tema="claro"] .sync-cartao { background: #fff; color: #111; }
 }
 .sync-cartao button.perigo { background: transparent; border: 1px solid #ff8a80; color: #ff8a80; }
 #sync-status { margin: 4px 0 12px; font-size: 14px; opacity: 0.7; }
+
+/* =====================================================
+   CAMADA VISUAL v2 · Etapa 1: base
+   ===================================================== */
+
+body {
+  font-family: var(--fonte-texto);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Feedback ao toque em todos os botões */
+button {
+  font-family: inherit;
+  transition: transform 0.12s ease, background-color 0.2s ease,
+    opacity 0.2s ease, border-color 0.2s ease;
+}
+button:active:not(:disabled) { transform: scale(0.97); }
+
+/* Respeita "Reduzir movimento" do iPhone */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ----- Títulos ----- */
+header { z-index: 4; padding: calc(env(safe-area-inset-top) + 18px) 22px 12px; border-bottom: none; }
+header h1 {
+  font-family: var(--fonte-titulo);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+h2 {
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.estudo-fim h2 { font-size: 28px; }
+
+/* ----- Cartões e itens de lista ----- */
+.deck-item, .card-item, .estudo-card {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+/* "lombada" de caderno à esquerda do deck */
+.deck-item {
+  min-height: 72px;
+  padding-left: 22px;
+  box-shadow: inset 5px 0 0 var(--destaque), var(--sombra);
+}
+.deck-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 19px;
+  font-weight: 600;
+}
+.deck-qtd { font-size: 14px; }
+.deck-editar { color: var(--texto-suave); }
+
+.contadores b, .deck-qtd b { font-variant-numeric: tabular-nums; }
+.c-novo { color: var(--facil); }
+.c-aprender { color: var(--errei); }
+.c-revisar { color: var(--bom); }
+
+.tag {
+  background: var(--destaque-suave);
+  color: var(--destaque);
+  font-weight: 600;
+}
+
+/* ----- Botões ----- */
+.btn, .botao-tema {
+  border: 1.5px solid var(--borda-forte);
+  border-radius: 16px;
+  font-weight: 600;
+}
+.btn.principal {
+  background: var(--destaque);
+  border-color: var(--destaque);
+  color: var(--sobre-destaque);
+  box-shadow: var(--sombra-botao);
+}
+.btn.perigo { color: var(--errei); border-color: var(--errei); }
+.botao-tema { border-radius: 16px; }
+.botao-tema.ativo { border-color: var(--destaque); background: var(--destaque-suave); }
+.btn-voltar { color: var(--destaque); font-weight: 600; }
+
+.btn-estudar-deck {
+  background: var(--destaque);
+  color: var(--sobre-destaque);
+  border-radius: var(--raio-sm);
+  font-weight: 600;
+}
+
+/* Botão + (formato "squircle", não círculo) */
+.fab {
+  width: 64px;
+  height: 64px;
+  border-radius: 22px;
+  background: var(--destaque);
+  color: var(--sobre-destaque);
+  box-shadow: var(--sombra-botao);
+}
+
+/* ----- Barra de baixo ----- */
+nav { border-top: none; box-shadow: 0 -10px 28px -14px rgba(0, 0, 0, 0.3); }
+nav button { position: relative; }
+nav button.ativo { color: var(--destaque); font-weight: 700; }
+nav button.ativo::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 28px;
+  height: 4px;
+  border-radius: 0 0 4px 4px;
+  background: var(--acento);
+}
+
+/* ----- Janelas (modais) e campos ----- */
+.modal { background: rgba(10, 14, 12, 0.6); }
+.modal-caixa {
+  border-radius: 24px;
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.55);
+}
+.modal-caixa input, .modal-caixa textarea,
+#input-tags, #input-busca, .limites input,
+#filtro-estudo, #select-tipo, #btn-lacuna, #btn-sair-conta {
+  border-radius: var(--raio-sm);
+  border: 1.5px solid var(--borda-forte);
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--destaque);
+  box-shadow: 0 0 0 3px var(--anel-foco);
+}
+
+/* ----- Estudo ----- */
+.estudo-card {
+  padding: 28px 22px;
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  line-height: 1.55;
+}
+.estudo-acoes {
+  border-top: none;
+  box-shadow: 0 -10px 28px -14px rgba(0, 0, 0, 0.3);
+}
+.nota { border-radius: 16px; }
+.nota.errei { color: var(--errei); border-color: var(--errei); }
+.nota.dificil { color: var(--dificil); border-color: var(--dificil); }
+.nota.bom { color: var(--bom); border-color: var(--bom); }
+.nota.facil { color: var(--facil); border-color: var(--facil); }
+
+.lacuna { color: var(--dificil); background: rgba(226, 163, 59, 0.2); }
+.lacuna-resp { color: var(--bom); }
+
+/* ----- Login e sincronização ----- */
+html[data-tema] #tela-login { background: var(--fundo); color: var(--texto); }
+#form-login h1 { font-family: var(--fonte-titulo); font-size: 32px; }
+#login-enviar, .sync-cartao button {
+  background: var(--destaque);
+  color: var(--sobre-destaque);
+  border-radius: var(--raio-sm);
+}
+.sync-cartao button.perigo { background: transparent; color: var(--errei); border-color: var(--errei); }
+.login-link { color: var(--destaque); }
+#login-msg { color: var(--errei); }
+html[data-tema] .sync-cartao {
+  background: var(--superficie);
+  color: var(--texto);
+  border-radius: 24px;
+}
