@@ -1256,3 +1256,52 @@ nav button .ico { width: 24px; height: 24px; }
 /* Menu da engrenagem */
 #menu-deck .btn { justify-content: flex-start; }
 #menu-deck h2 { overflow-wrap: anywhere; }
+
+/* =====================================================
+   AJUSTE: decks menores + subdecks com visual próprio
+   ===================================================== */
+
+/* ----- Decks mais compactos ----- */
+.deck-item {
+  min-height: 56px;
+  margin-bottom: 10px;
+  padding-left: 14px;
+}
+.deck-info { padding: 10px 0; }
+.deck-nome { font-size: 16px; }
+.deck-qtd { font-size: 12px; margin-top: 1px; }
+.deck-qtd + .deck-qtd { margin-top: 6px; }
+.chip { font-size: 11px; padding: 2px 8px; }
+.chip b { font-size: 13px; }
+.deck-toggle { width: 30px; height: 30px; font-size: 18px; margin-right: 8px; }
+.deck-editar { width: 44px; height: 44px; }
+.btn-estudar-deck { min-height: 40px; padding: 0 14px; font-size: 14px; }
+
+/* ----- Subdecks: sem sombra, fundo diferente e lombada colorida ----- */
+.deck-item.sub {
+  background: var(--fundo);
+  border-color: var(--borda-forte);
+  box-shadow: inset 4px 0 0 var(--facil);   /* sem a sombra externa do deck principal */
+}
+.deck-item.sub .deck-nome { font-size: 15px; font-weight: 500; }
+.deck-item.sub .deck-toggle { background: rgba(111, 179, 204, 0.18); color: var(--facil); }
+.deck-item.sub .btn-estudar-deck {
+  background: transparent;
+  color: var(--facil);
+  border: 1.5px solid var(--facil);
+  box-shadow: none;
+}
+.deck-item.sub .btn-estudar-deck:disabled {
+  border-color: var(--borda);
+  color: var(--texto-suave);
+}
+
+/* Segundo nível: âmbar */
+.deck-item.sub-2 { box-shadow: inset 4px 0 0 var(--acento); }
+.deck-item.sub-2 .deck-toggle { background: rgba(226, 163, 59, 0.18); color: var(--acento); }
+.deck-item.sub-2 .btn-estudar-deck { color: var(--acento); border-color: var(--acento); }
+
+/* Terceiro nível: coral */
+.deck-item.sub-3 { box-shadow: inset 4px 0 0 var(--errei); }
+.deck-item.sub-3 .deck-toggle { background: rgba(224, 122, 99, 0.18); color: var(--errei); }
+.deck-item.sub-3 .btn-estudar-deck { color: var(--errei); border-color: var(--errei); }
