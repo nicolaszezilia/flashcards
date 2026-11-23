@@ -533,7 +533,7 @@ async function renderizarEstudo() {
     } else if (totalHoje === 0) {
     resumo.textContent =
       filtroEstudo.tipo === "todos"
-        ? "Tudo em dia por hoje 🎉"
+                ? "Tudo em dia por hoje"
         : "Nada pendente hoje neste filtro.";
   } else {
         resumo.innerHTML =
