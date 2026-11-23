@@ -582,6 +582,15 @@ function mostrarProximoCard() {
   sessao.revelado = false;
 
   document.getElementById("estudo-progresso").textContent = "Restam " + sessao.fila.length;
+    // Visual: barra de progresso e entrada suave do cartão
+  const feitos = sessao.respondidos;
+  const totalSessao = feitos + sessao.fila.length;
+  document.getElementById("barra-sessao-fill").style.width =
+    (totalSessao ? (feitos / totalSessao) * 100 : 0) + "%";
+  const cartaoEl = document.getElementById("estudo-card");
+  cartaoEl.classList.remove("entra");
+  void cartaoEl.offsetWidth; // reinicia a animação
+  cartaoEl.classList.add("entra");
     document.getElementById("estudo-frente").innerHTML = ehCloze(card)
     ? formatarCloze(card.frente, false)
     : formatarTexto(card.frente);
