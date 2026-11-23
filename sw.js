@@ -1,6 +1,6 @@
 // Se você adicionar arquivos novos ao app, inclua-os na lista
 // e aumente o número da versão (v1 -> v2).
-const CACHE = "flashcards-v1";
+const CACHE = "flashcards-v2";
 const ARQUIVOS = [
   "./",
   "./index.html",
@@ -10,6 +10,8 @@ const ARQUIVOS = [
   "./export.js",
   "./db.js",
   "./srs.js",
+  "./auth.js",
+  "./nuvem.js",
   "./manifest.json",
   "./icon-180.png",
   "./icon-192.png",
