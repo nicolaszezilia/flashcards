@@ -139,4 +139,5 @@ onAuthStateChanged(auth, (user) => {
   document.body.classList.toggle("bloqueado", !user);
   textoConta.textContent = user ? "Conta: " + user.email : "";
   blocoSair.classList.toggle("oculto", !user);
-});
+  if (user) iniciarNuvem(app, user);
+  else pararNuvem();});
