@@ -536,7 +536,9 @@ async function renderizarEstudo() {
         ? "Tudo em dia por hoje 🎉"
         : "Nada pendente hoje neste filtro.";
   } else {
-    resumo.textContent = totalHoje + (totalHoje === 1 ? " cartão" : " cartões") + " para estudar hoje";
+        resumo.innerHTML =
+      '<b class="num-hoje">' + totalHoje + "</b>" +
+      (totalHoje === 1 ? " cartão" : " cartões") + " para estudar hoje";
   }
 }
 
