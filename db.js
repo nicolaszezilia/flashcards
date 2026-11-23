@@ -95,9 +95,17 @@ const listarCards = (deckId) =>
 const contarCards = (deckId) =>
   transacao("cards", "readonly", (s) => s.index("deckId").count(deckId));
 
-const salvarCard = (card) => transacao("cards", "readwrite", (s) => s.put(card));
+async function salvarCard(card) {
+  const c = { ...card, id: card.id ?? novoId(), atualizadoEm: Date.now() };
+  await transacao("cards", "readwrite", (s) => s.put(c));
+  if (nuvemPronta()) window.nuvem.salvar("cards", c);
+  return c.id;
+}
 
-const apagarCard = (id) => transacao("cards", "readwrite", (s) => s.delete(id));
+async function apagarCard(id) {
+  await transacao("cards", "readwrite", (s) => s.delete(id));
+  if (nuvemPronta()) window.nuvem.apagar("cards", id);
+}
 
 const salvarRevisao = (rev) => transacao("revisoes", "readwrite", (s) => s.add(rev));
 
