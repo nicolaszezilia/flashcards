@@ -960,3 +960,111 @@ nav button span {
 #estudo-verso { font-size: 17px; line-height: 1.5; }
 body.estudando header h1 { font-size: 22px; }
 body.estudando header { padding-bottom: 8px; }
+
+/* =====================================================
+   CAMADA VISUAL v2 · Etapa 4: progresso e conquistas
+   ===================================================== */
+
+/* ----- Painel do dia (aba Estudar) ----- */
+.painel {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  margin-bottom: 22px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+.anel { position: relative; width: 104px; height: 104px; flex: none; }
+.anel svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.anel-trilho { fill: none; stroke: var(--borda); stroke-width: 9; }
+.anel-fill {
+  fill: none;
+  stroke: var(--destaque);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 263.9;
+  stroke-dashoffset: 263.9;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), stroke 0.3s;
+}
+.painel.completo .anel-fill { stroke: var(--acento); }
+.painel.completo .anel { animation: pulso 0.6s ease-out; }
+@keyframes pulso {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.anel-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.anel-centro b {
+  font-family: var(--fonte-titulo);
+  font-size: 28px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.anel-centro small { margin-top: 3px; font-size: 12px; color: var(--texto-suave); }
+
+.painel-info { flex: 1; min-width: 0; }
+.streak { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; }
+.streak .ico { flex: none; color: var(--acento); }
+.streak.zero { color: var(--texto-suave); font-weight: 600; }
+.streak.zero .ico { color: var(--texto-suave); }
+.streak-dica { margin: 4px 0 0; font-size: 13px; color: var(--texto-suave); }
+
+.nivel { margin-top: 14px; }
+.nivel-topo { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.nivel-topo span:last-child { font-weight: 500; color: var(--texto-suave); }
+.nivel-barra { height: 6px; margin-top: 7px; border-radius: 999px; background: var(--borda); overflow: hidden; }
+.nivel-barra i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--acento);
+  transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ----- Selos (Ajustes) ----- */
+.selos-qtd {
+  margin-left: 6px;
+  font-family: var(--fonte-texto);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+.selos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.selo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+}
+.selo .disco {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(226, 163, 59, 0.18);
+  color: var(--acento);
+}
+.selo .disco .ico { width: 22px; height: 22px; }
+.selo.bloq { opacity: 0.5; }
+.selo.bloq .disco { background: var(--borda); color: var(--texto-suave); }
+.selo.novo .disco { animation: pop 0.5s ease-out; }
