@@ -806,6 +806,21 @@ window.atualizarTela = function () {
     else if (nome === "deck" && deckAberto) renderizarCards();
   }, 300);
 };
+
+// ---------- Tela de erro ----------
+function mostrarErro(titulo, detalhe) {
+  const tela = document.createElement("div");
+  tela.className = "tela-erro";
+  tela.innerHTML =
+    '<div class="erro-caixa">' +
+    '<div class="erro-icone"><svg class="ico"><use href="#i-alerta"/></svg></div>' +
+    "<h2></h2><p class=\"texto-suave\"></p>" +
+    '<button class="btn principal" id="erro-tentar">Tentar de novo</button></div>';
+  tela.querySelector("h2").textContent = titulo;
+  tela.querySelector("p").textContent = detalhe;
+  tela.querySelector("#erro-tentar").addEventListener("click", () => location.reload());
+  document.body.appendChild(tela);
+}
 // ---------- Início ----------
 async function iniciar() {
   aplicarTema(localStorage.getItem("tema") || "escuro");
