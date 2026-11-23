@@ -812,10 +812,10 @@ async function iniciar() {
   mostrarUltimoBackup();
   mostrarTela("decks");
 
-  try {
+    try {
     await abrirBanco();
   } catch (erro) {
-    alert("Não consegui abrir o banco de dados: " + erro);
+    mostrarErro("Não consegui abrir seus dados", String(erro));
     return;
   }
 
