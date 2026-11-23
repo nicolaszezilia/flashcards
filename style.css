@@ -1068,3 +1068,130 @@ body.estudando header { padding-bottom: 8px; }
 .selo.bloq { opacity: 0.5; }
 .selo.bloq .disco { background: var(--borda); color: var(--texto-suave); }
 .selo.novo .disco { animation: pop 0.5s ease-out; }
+
+/* =====================================================
+   CAMADA VISUAL v2 · Etapa 5: ícones e estados
+   ===================================================== */
+
+/* ----- Ícones (um único estilo) ----- */
+.ico {
+  width: 1.25em;
+  height: 1.25em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+nav button .ico { width: 24px; height: 24px; }
+.deck-editar { display: grid; place-items: center; }
+.deck-editar .ico { width: 21px; height: 21px; }
+
+.btn, .botao-tema, .btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn { display: flex; }
+.btn-voltar { justify-content: flex-start; gap: 6px; }
+
+/* ----- Estado vazio ----- */
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 48px;
+  padding: 0 12px;
+  color: var(--texto-suave);
+}
+.vazio-icone {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 18px;
+  border-radius: 28px;
+  background: var(--destaque-suave);
+  color: var(--destaque);
+}
+.vazio-icone .ico { width: 38px; height: 38px; stroke-width: 1.6; }
+.vazio h3 {
+  margin: 0 0 6px;
+  font-family: var(--fonte-titulo);
+  font-size: 21px;
+  color: var(--texto);
+}
+.vazio p { margin: 0; max-width: 280px; line-height: 1.5; }
+
+/* ----- Conclusão da sessão ----- */
+.estudo-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 56px;
+  animation: telaEntra 0.3s ease-out;
+}
+.estudo-fim.oculto { display: none !important; }
+.selo-fim {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin-bottom: 20px;
+  border-radius: 50%;
+  background: rgba(226, 163, 59, 0.18);
+  color: var(--acento);
+  animation: pop 0.6s ease-out;
+}
+.selo-fim .ico { width: 44px; height: 44px; stroke-width: 1.6; }
+.selo-fim::after {            /* onda suave que se expande uma vez */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--acento);
+  opacity: 0;
+  animation: onda 1s ease-out 0.2s;
+}
+@keyframes onda {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+.resumo-fim { margin: 6px 0 28px; max-width: 280px; color: var(--texto-suave); }
+.estudo-fim .btn { max-width: 320px; }
+
+/* ----- Tela de erro ----- */
+.tela-erro {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--fundo);
+}
+.erro-caixa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+}
+.erro-icone {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  margin-bottom: 18px;
+  border-radius: 28px;
+  background: rgba(224, 122, 99, 0.16);
+  color: var(--errei);
+}
+.erro-icone .ico { width: 38px; height: 38px; stroke-width: 1.6; }
+.erro-caixa h2 { margin: 0 0 8px; }
+.erro-caixa .texto-suave { margin: 0 0 22px; word-break: break-word; }
