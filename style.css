@@ -765,3 +765,97 @@ html[data-tema] .sync-cartao {
   color: var(--texto);
   border-radius: 24px;
 }
+
+/* =====================================================
+   CAMADA VISUAL v2 · Etapa 2: abas, decks e contadores
+   ===================================================== */
+
+/* Transição suave ao trocar de tela */
+.tela.ativa { animation: telaEntra 0.22s ease-out; }
+@keyframes telaEntra {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ----- Pílulas dos contadores ----- */
+.chips { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip::before {            /* fundo = a própria cor do texto, bem transparente */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0.13;
+}
+.chip b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.chip.zero { color: var(--texto-suave); opacity: 0.55; }
+
+.contadores { margin-bottom: 18px; }
+.deck-qtd + .deck-qtd { margin-top: 8px; }
+
+/* ----- Lista de decks ----- */
+.deck-item { margin-bottom: 14px; }
+.deck-info { cursor: pointer; padding: 14px 0; }
+.deck-info:active { opacity: 0.6; }
+
+/* Botão "Estudar" de cada deck */
+.btn-estudar-deck { min-height: 48px; box-shadow: var(--sombra-botao); }
+.btn-estudar-deck:disabled {
+  background: var(--borda);
+  color: var(--texto-suave);
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* ----- Aba Estudar: resumo do dia ----- */
+.resumo-hoje {
+  font-size: 16px;
+  color: var(--texto-suave);
+  margin: 6px 0 22px;
+}
+.num-hoje {
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-size: 64px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--destaque);
+  margin-bottom: 6px;
+}
+
+/* ----- Tela do deck ----- */
+#btn-estudar {
+  min-height: 60px;
+  font-size: 19px;
+  margin-bottom: 18px;
+}
+.card-item { padding: 16px 18px; }
+.card-item:active { opacity: 0.7; }
+.card-frente {
+  font-family: var(--fonte-titulo);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* ----- Barra de baixo ----- */
+nav button { min-height: 66px; }
+nav button span {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
