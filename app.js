@@ -746,6 +746,10 @@ function validarBackup(d) {
 }
 
 async function importarBackup(arquivo) {
+    if (window.nuvem && window.nuvem.pronta) {
+    alert("Com a sincronização ligada, importar backup ainda não está liberado (chega em uma próxima etapa). A importação de cartões por texto/CSV funciona normalmente.");
+    return;
+  }
   try {
     const dados = JSON.parse(await arquivo.text());
     validarBackup(dados);
