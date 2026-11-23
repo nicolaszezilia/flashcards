@@ -39,12 +39,16 @@ function formatarCloze(t, revelar) {
   );
   return html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>");
 }
-// "Novos 5 · Aprender 1 · Revisar 12" com cores
+// Três pílulas: Novos / Aprender / Revisar (zerado fica apagado)
 function htmlContadores(c) {
+  const chip = (cls, n, rotulo) =>
+    '<span class="chip ' + cls + (n === 0 ? " zero" : "") + '"><b>' + n + "</b> " + rotulo + "</span>";
   return (
-    'Novos <b class="c-novo">' + c.novos + "</b> · " +
-    'Aprender <b class="c-aprender">' + c.aprender + "</b> · " +
-    'Revisar <b class="c-revisar">' + c.revisar + "</b>"
+    '<span class="chips">' +
+    chip("c-novo", c.novos, "novos") +
+    chip("c-aprender", c.aprender, "aprender") +
+    chip("c-revisar", c.revisar, "revisar") +
+    "</span>"
   );
 }
 
