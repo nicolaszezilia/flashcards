@@ -181,3 +181,45 @@ async function feitosHojePorDeck() {
 function feitosDoDeck(mapa, deckId) {
   return mapa[deckId] || { novos: 0, revisoes: 0 };
 }
+// Aplica no aparelho uma alteração que veio da nuvem (usada na etapa 4C-2)
+async function aplicarRemoto(nome, d) {
+  const db = await abrirBanco();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(["decks", "cards", "revisoes"], "readwrite");
+    const dados = { ...d };
+    delete dados.sv;
+
+    if (nome === "revisoes") {
+      const loja = tx.objectStore("revisoes");
+      (dados.itens || []).forEach((r) => loja.put(r));
+    } else {
+      const loja = tx.objectStore(nome);
+      const id = Number(dados.id);
+      if (dados.apagado) {
+        loja.delete(id);
+        if (nome === "decks") {
+          const cards = tx.objectStore("cards");
+          const cur = cards.index("deckId").openKeyCursor(IDBKeyRange.only(id));
+          cur.onsuccess = () => {
+            const c = cur.result;
+            if (c) {
+              cards.delete(c.primaryKey);
+              c.continue();
+            }
+          };
+        }
+      } else {
+        const req = loja.get(id);
+        req.onsuccess = () => {
+          const local = req.result;
+          // só sobrescreve se a versão da nuvem for mais nova
+          if (!local || (local.atualizadoEm ?? 0) <= (dados.atualizadoEm ?? 0)) loja.put(dados);
+        };
+      }
+    }
+
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error);
+  });
+}
