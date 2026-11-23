@@ -162,6 +162,9 @@ async function enviarTudoDesteAparelho() {
     mapaDeck.set(d.id, id);
     return { ...d, id, atualizadoEm: d.atualizadoEm ?? agora };
   });
+    decks.forEach((d) => {
+    if (d.parentId != null) d.parentId = mapaDeck.get(d.parentId) ?? d.parentId;
+  });
   const cards = dados.cards.map((c) => {
     const id = antigo(c.id) ? novoId() : c.id;
     mapaCard.set(c.id, id);
