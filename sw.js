@@ -1,6 +1,6 @@
 // Se você adicionar arquivos novos ao app, inclua-os na lista
 // e aumente o número da versão (v3 -> v4).
-const CACHE = "flashcards-v5";
+const CACHE = "flashcards-v6";
 const CACHE_SDK = "flashcards-sdk"; // arquivos do Firebase: não é apagado nas atualizações
 const ARQUIVOS = [
   "./",
@@ -17,6 +17,7 @@ const ARQUIVOS = [
   "./icon-180.png",
   "./icon-192.png",
   "./icon-512.png",
+  "./visual.js"
 ];
 
 // Instalação: guarda uma cópia nova de todos os arquivos do app
