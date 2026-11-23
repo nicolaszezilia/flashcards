@@ -57,7 +57,12 @@ async function transacao(nomeStore, modo, operacao) {
 }
 
 const listarDecks = () => transacao("decks", "readonly", (s) => s.getAll());
-const salvarDeck = (deck) => transacao("decks", "readwrite", (s) => s.put(deck));
+async function salvarDeck(deck) {
+  const d = { ...deck, id: deck.id ?? novoId(), atualizadoEm: Date.now() };
+  await transacao("decks", "readwrite", (s) => s.put(d));
+  if (nuvemPronta()) window.nuvem.salvar("decks", d);
+  return d.id;
+}
 
 // Apagar um deck também apaga todos os cartões dele
 async function apagarDeck(id) {
