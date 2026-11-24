@@ -1304,3 +1304,19 @@ nav button .ico { width: 24px; height: 24px; }
 .deck-item.sub-3 { box-shadow: inset 4px 0 0 var(--errei); }
 .deck-item.sub-3 .deck-toggle { background: rgba(224, 122, 99, 0.18); color: var(--errei); }
 .deck-item.sub-3 .btn-estudar-deck { color: var(--errei); border-color: var(--errei); }
+
+/* =====================================================
+   VERSO COM FUNDO DIFERENTE DA FRENTE
+   ===================================================== */
+
+/* Resposta: faixa com fundo suave na cor de destaque */
+#estudo-verso {
+  margin: 0 -12px -8px;          /* alarga um pouco para as bordas do cartão */
+  padding: 16px 14px 18px;
+  border-radius: var(--raio-sm);
+  background: var(--destaque-suave);
+  box-shadow: inset 4px 0 0 var(--destaque);  /* lombada colorida à esquerda */
+}
+
+/* A linha separadora fica redundante com a faixa colorida */
+#estudo-linha { display: none; }
