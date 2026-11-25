@@ -1,5 +1,8 @@
 // export.js — exportar um deck (e seus subdecks) para o Anki
 (function () {
+    // Nomes dos tipos de nota no SEU Anki (confira em Ferramentas → Gerenciar tipos de nota)
+  const NOTA_BASICA = "Basic";
+  const NOTA_CLOZE = "Cloze";
   // ---------- Janela (usa o estilo criado pelo import.js) ----------
   const fundo = document.createElement("div");
   fundo.className = "imp-fundo";
