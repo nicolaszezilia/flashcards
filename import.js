@@ -137,7 +137,7 @@
     for (const campos of lerTabela(texto, sep)) {
       if (campos.length === 1 && campos[0].trim() === "") continue;       // linha vazia
       if (campos.length === 1 && campos[0].startsWith("#")) continue;     // cabeçalho do Anki
-      if (campos.length < 2) { ignoradas++; continue; }
+            if (campos.length < 2 && !temCloze(campos[0])) { ignoradas++; continue; }
 
       let frente, verso, tags = [], deck = deckFixo;
       if (sep === "\t") {
