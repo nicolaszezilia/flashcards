@@ -143,9 +143,9 @@
       if (sep === "\t") {
         // Com Tab: frente e verso são as duas primeiras colunas que não são especiais
         const idx = campos.map((_, i) => i).filter((i) => !especiais.has(i));
-        if (idx.length < 2) { ignoradas++; continue; }
-        frente = limparHtml(campos[idx[0]]);
-        verso = limparHtml(campos[idx[1]]);
+                if (idx.length < 1) { ignoradas++; continue; }
+        frente = limparHtml(campos[idx[0]] || "");
+        verso = idx.length > 1 ? limparHtml(campos[idx[1]] || "") : "";
         if (colunaTags >= 0 && campos[colunaTags]) tags = lerTags(campos[colunaTags]);
         if (colunaDeck >= 0 && campos[colunaDeck]) {
           const d = limparNomeDeck(campos[colunaDeck]);
