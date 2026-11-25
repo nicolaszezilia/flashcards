@@ -91,7 +91,7 @@
     btnExportar.disabled = true; // evita toque duplo
     try {
       const ids = idsDaSubarvore(decks, deck.id);
-      const linhas = ["#separator:tab", "#html:true", "#tags column:3", "#deck column:4"];
+            const linhas = ["#separator:tab", "#html:true", "#tags column:3", "#deck column:4", "#notetype column:5"];
 
       for (const id of ids) {
         const cards = await listarCards(id);
