@@ -157,8 +157,8 @@
         verso = limparHtml(campos.slice(1).join(";"));
       }
 
-      if (!frente || !verso) { ignoradas++; continue; }
-      cartoes.push({ frente, verso, tags, deck });
+            if (!frente || (!verso && !temCloze(frente))) { ignoradas++; continue; }
+      cartoes.push({ frente, verso, tags, deck, tipo: temCloze(frente) ? "cloze" : "basico" });
     }
     return { cartoes, ignoradas };
   }
