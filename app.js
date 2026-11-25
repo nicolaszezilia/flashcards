@@ -986,7 +986,9 @@ function revelarResposta() {
   if (ehCloze(card)) {
     document.getElementById("estudo-frente").innerHTML = formatarCloze(card.frente, true);
   }
-  document.getElementById("estudo-verso").classList.remove("oculto");
+    if (!ehCloze(card) || card.verso) {
+    document.getElementById("estudo-verso").classList.remove("oculto");
+  }
   document.getElementById("estudo-linha").classList.remove("oculto");
   document.getElementById("btn-mostrar").classList.add("oculto");
   document.getElementById("notas").classList.remove("oculto");
