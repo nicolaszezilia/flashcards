@@ -280,7 +280,7 @@
           if (jaTem.has(k)) { repetidos++; return; }
           jaTem.add(k);
           const tags = [...new Set([...c.tags, ...tagsLote])];
-          novos.push({ deckId, frente: c.frente, verso: c.verso, tags, criadoEm: base + novos.length });
+           novos.push({ deckId, frente: c.frente, verso: c.verso, tags, tipo: c.tipo, criadoEm: base + novos.length });
         });
       }
 
