@@ -99,7 +99,8 @@
         const caminho = campoDeck(caminhoDoDeck(decks, id));
         cards.forEach((c) => {
           const tags = (c.tags || []).join(" ");
-          linhas.push(campoAnki(c.frente) + "\t" + campoAnki(c.verso) + "\t" + tags + "\t" + caminho);
+                    const nota = c.tipo === "cloze" ? NOTA_CLOZE : NOTA_BASICA;
+          linhas.push(campoAnki(c.frente) + "\t" + campoAnki(c.verso) + "\t" + tags + "\t" + caminho + "\t" + nota);
         });
       }
 
