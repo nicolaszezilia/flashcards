@@ -978,8 +978,9 @@ function mostrarProximoCard() {
   cartaoEl.classList.remove("entra");
   void cartaoEl.offsetWidth; // reinicia a animação
   cartaoEl.classList.add("entra");
+    sessao.abertas = new Set();
   document.getElementById("estudo-frente").innerHTML = ehCloze(card)
-    ? formatarCloze(card.frente, false)
+    ? formatarClozeEstudo(card.frente, sessao.abertas, false)
     : formatarTexto(card.frente);
   document.getElementById("estudo-verso").innerHTML = formatarTexto(card.verso || "");
   document.getElementById("estudo-verso").classList.add("oculto");
