@@ -1077,8 +1077,8 @@ function sairDoEstudo() {
 function abrirLacuna(n) {
   const card = sessao.fila[0];
   sessao.abertas.add(n);
-  document.getElementById("estudo-frente").innerHTML =
-    formatarClozeEstudo(card.frente, sessao.abertas, false);
+    document.getElementById("estudo-frente").innerHTML =
+    formatarClozeEstudo(card.frente, sessao.abertas, false, card.imagens);
   const total = (card.frente.match(REGEX_CLOZE) || []).length;
   if (sessao.abertas.size >= total) revelarResposta();
 }
