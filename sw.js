@@ -56,7 +56,10 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
 
   // Arquivos do Firebase (a versão é fixa): guarda na primeira vez e depois usa do aparelho
-  if (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/")) {
+    if (
+    (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/")) ||
+    (url.hostname === "cdnjs.cloudflare.com" && url.pathname.startsWith("/ajax/libs/"))
+  ) {
     e.respondWith(
       caches.open(CACHE_SDK).then(async (cache) => {
         const guardado = await cache.match(req);
