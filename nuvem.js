@@ -89,10 +89,10 @@ window.nuvem = {
     ).catch(aviso);
   },
 
-  salvarVarios(cards) {
-    for (let i = 0; i < cards.length; i += 25) {
+    salvarVarios(cards) {
+    for (let i = 0; i < cards.length; i += 5) {
       const lote = writeBatch(bd);
-      cards.slice(i, i + 25).forEach((c) =>
+      cards.slice(i, i + 5).forEach((c) =>
         lote.set(ref("cards", c.id), { ...c, sv: serverTimestamp() })
       );
       lote.commit().catch(aviso);
