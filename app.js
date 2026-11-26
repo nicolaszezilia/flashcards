@@ -1012,7 +1012,7 @@ function revelarResposta() {
 
   const card = sessao.fila[0];
   if (ehCloze(card)) {
-        document.getElementById("estudo-frente").innerHTML = formatarClozeEstudo(card.frente, sessao.abertas, true);
+        document.getElementById("estudo-frente").innerHTML = formatarClozeEstudo(card.frente, sessao.abertas, true, card.imagens);
   }
     if (!ehCloze(card) || card.verso) {
     document.getElementById("estudo-verso").classList.remove("oculto");
