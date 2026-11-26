@@ -301,9 +301,10 @@
           const k = chave(c.frente + assinatura(c.imagens), c.verso);
           if (jaTem.has(k)) { repetidos++; return; }
           jaTem.add(k);
-          novos.push({
+          n          novos.push({
             deckId, frente: c.frente, verso: c.verso, tags: c.tags,
             tipo: c.tipo, criadoEm: base + novos.length,
+            ...(c.imagens && c.imagens.length ? { imagens: c.imagens } : {}),
           });
         });
       }
