@@ -1320,3 +1320,7 @@ nav button .ico { width: 24px; height: 24px; }
 
 /* A linha separadora fica redundante com a faixa colorida */
 #estudo-linha { display: none; }
+
+/* Cloze: lacuna tocável; sem "pop" repetido nas já abertas */
+.lacuna { cursor: pointer; }
+#estudo-frente .lacuna-resp { animation: none; }
