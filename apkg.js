@@ -156,7 +156,7 @@
     }).join("|");
   }
   // ---------- Leitura do .apkg ----------
-  async function lerApkg(arquivo) {
+   async function lerApkg(arquivo, aoProgresso) {
     const SQL = await prepararBibliotecas();
     let zip;
     try {
@@ -171,6 +171,33 @@
       throw new Error('Este .apkg está no formato novo do Anki. Exporte de novo marcando "Compatível com versões antigas do Anki".');
     } else if (zip.file("collection.anki2")) nome = "collection.anki2";
     else throw new Error("Não encontrei os cartões dentro do arquivo.");
+
+    // Mapa das imagens: nome do arquivo -> nome dentro do zip ("0", "1"...)
+    const mapaMidia = new Map();
+    const arqMidia = zip.file("media");
+    if (arqMidia) {
+      try {
+        const obj = JSON.parse(await arqMidia.async("string"));
+        for (const [k, v] of Object.entries(obj)) mapaMidia.set(v, k);
+      } catch (e) {}
+    }
+    const cache = new Map(); // a mesma imagem usada em vários cartões é lida uma vez
+    const ctx = { total: 0, falhas: 0, feitas: 0 };
+    const carregar = async (src) => {
+      const nomeImg = descobrirNome(src, mapaMidia);
+      if (!nomeImg) return null;
+      if (cache.has(nomeImg)) return cache.get(nomeImg);
+      let url = null;
+      const ext = nomeImg.split(".").pop().toLowerCase();
+      if (TIPOS[ext]) {
+        const bytes = await zip.file(mapaMidia.get(nomeImg)).async("uint8array");
+        url = await comprimirImagem(bytes, TIPOS[ext]);
+      }
+      cache.set(nomeImg, url);
+      ctx.feitas++;
+      if (aoProgresso && ctx.feitas % 10 === 0) aoProgresso("Processando imagens… " + ctx.feitas);
+      return url;
+    };
 
     const bytes = await zip.file(nome).async("uint8array");
     const db = new SQL.Database(bytes);
@@ -192,15 +219,17 @@
 
       const cartoes = [];
       let ignoradas = 0;
-      let comImagem = 0;
       const rn = db.exec("SELECT id, mid, flds, tags FROM notes");
       if (rn.length) {
         for (const [id, mid, flds, tagsTxt] of rn[0].values) {
           const campos = String(flds).split("\x1f");
-          if (/<img/i.test(flds)) comImagem++;
 
-          const frente = limparHtml(campos[0]);
-          const verso = limparHtml(campos[1] || "");
+          const imagens = [];
+          let frente = limparHtml(marcarImagens(campos[0]));
+          let verso = limparHtml(marcarImagens(campos[1] || ""));
+          frente = await resolverImagens(frente, carregar, ctx, imagens);
+          verso = await resolverImagens(verso, carregar, ctx, imagens);
+
           const cloze = temCloze(frente);
           if (!frente || (!cloze && !verso)) { ignoradas++; continue; }
 
@@ -209,13 +238,13 @@
           if (!deck || /^(default|padrão|padrao)$/i.test(deck)) deck = DECK_PADRAO;
 
           cartoes.push({
-            frente, verso, deck,
+            frente, verso, deck, imagens,
             tags: lerTags(String(tagsTxt || "")),
             tipo: cloze ? "cloze" : "basico",
           });
         }
       }
-      return { cartoes, ignoradas, comImagem };
+      return { cartoes, ignoradas, imagens: ctx.total - ctx.falhas, falhas: ctx.falhas };
     } finally {
       db.close();
     }
