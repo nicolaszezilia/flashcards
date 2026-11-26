@@ -10,7 +10,7 @@
   fundo.innerHTML = `
     <div class="imp-caixa">
       <h2>Importar arquivo .apkg</h2>
-      <p class="imp-ajuda">Importa decks do Anki mantendo subdecks, tags, negrito e cloze. Os cartões entram como <b>novos</b> (o histórico de estudo do Anki não é levado) e imagens são ignoradas por enquanto. No Anki, exporte com <b>"Compatível com versões antigas"</b> marcado.</p>
+      <p class="imp-ajuda">Importa decks do Anki mantendo subdecks, tags, negrito e cloze. Os cartões entram como <b>novos</b> (o histórico de estudo do Anki não é levado) e imagens são reduzidas e guardadas dentro do cartão (áudio é ignorado). No Anki, exporte com <b>"Compatível com versões antigas"</b> marcado.</p>
 
       <div class="imp-linha">
         <button type="button" id="apkg-escolher">📦 Escolher arquivo .apkg</button>
