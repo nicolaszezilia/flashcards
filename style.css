@@ -1324,3 +1324,13 @@ nav button .ico { width: 24px; height: 24px; }
 /* Cloze: lacuna tocável; sem "pop" repetido nas já abertas */
 .lacuna { cursor: pointer; }
 #estudo-frente .lacuna-resp { animation: none; }
+
+/* Imagens dentro dos cartões */
+.img-card {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 10px auto;
+  border-radius: 12px;
+}
+.card-item .img-card { max-height: 56px; width: auto; margin: 4px 0; }
