@@ -252,7 +252,7 @@
 
   // ---------- Prévia ----------
   function mostrarPrevia() {
-    const { cartoes, ignoradas, comImagem } = lido;
+        const { cartoes, ignoradas, imagens, falhas } = lido;
     const nomes = new Set(cartoes.map((c) => c.deck.toLowerCase()));
     let html =
       "<b>" + cartoes.length + (cartoes.length === 1 ? " cartão encontrado" : " cartões encontrados") +
