@@ -15,11 +15,20 @@ function escaparHtml(t) {
   return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// [img:1] vira <img> usando a lista card.imagens; sem lista, o marcador some
+function trocarImagens(html, imagens) {
+  return html.replace(/\[img:(\d+)\]/g, (_, n) => {
+    const src = imagens && imagens[Number(n) - 1];
+    return src ? '<img class="img-card" src="' + src + '" alt="">' : "";
+  });
+}
+
 // **negrito** vira <strong>, e quebra de linha vira <br>
-function formatarTexto(t) {
-  return escaparHtml(t)
+function formatarTexto(t, imagens) {
+  const html = escaparHtml(t)
     .replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>")
     .replace(/\n/g, "<br>");
+  return trocarImagens(html, imagens);
 }
 // ---------- Cloze (lacunas) ----------
 // Formato: {{c1::resposta}} ou {{c1::resposta::dica}}
