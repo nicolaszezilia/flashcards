@@ -639,7 +639,7 @@ async function renderizarCards() {
 
     const verso = document.createElement("div");
     verso.className = "card-verso";
-    verso.innerHTML = formatarTexto(card.verso);
+    verso.innerHTML = formatarTexto(card.verso, card.imagens);
 
     item.append(frente);
     if (card.verso) item.append(verso);
