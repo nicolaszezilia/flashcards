@@ -997,7 +997,7 @@ function revelarResposta() {
 
   const card = sessao.fila[0];
   if (ehCloze(card)) {
-    document.getElementById("estudo-frente").innerHTML = formatarCloze(card.frente, true);
+        document.getElementById("estudo-frente").innerHTML = formatarClozeEstudo(card.frente, sessao.abertas, true);
   }
     if (!ehCloze(card) || card.verso) {
     document.getElementById("estudo-verso").classList.remove("oculto");
