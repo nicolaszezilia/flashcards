@@ -345,7 +345,7 @@
     btnImportar.disabled = true;
     previa.textContent = "Lendo o arquivo… (na primeira vez pode demorar um pouco)";
     try {
-      lido = await lerApkg(arquivo);
+           lido = await lerApkg(arquivo, (t) => { previa.textContent = t; });
       if (lido.cartoes.length === 0) {
         previa.textContent = "Não encontrei nenhum cartão utilizável neste arquivo.";
         return;
