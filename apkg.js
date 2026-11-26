@@ -296,9 +296,9 @@
       let repetidos = 0;
       for (const [deckId, lista] of grupos) {
         const existentes = await listarCards(deckId);
-        const jaTem = new Set(existentes.map((c) => chave(c.frente.trim(), c.verso.trim())));
+                const jaTem = new Set(existentes.map((c) => chave(c.frente.trim() + assinatura(c.imagens), c.verso.trim())));
         lista.forEach((c) => {
-          const k = chave(c.frente, c.verso);
+          const k = chave(c.frente + assinatura(c.imagens), c.verso);
           if (jaTem.has(k)) { repetidos++; return; }
           jaTem.add(k);
           novos.push({
