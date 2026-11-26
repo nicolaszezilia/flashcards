@@ -1068,7 +1068,14 @@ function abrirLacuna(n) {
   if (sessao.abertas.size >= total) revelarResposta();
 }
 document.getElementById("btn-estudar").addEventListener("click", () => iniciarEstudo(null, "deck"));
-document.getElementById("estudo-card").addEventListener("click", revelarResposta);
+document.getElementById("estudo-card").addEventListener("click", (e) => {
+  if (sessao && !sessao.revelado && ehCloze(sessao.fila[0])) {
+    const alvo = e.target.closest(".lacuna");
+    if (alvo) abrirLacuna(Number(alvo.dataset.i)); // cloze: só abre a lacuna tocada
+    return;
+  }
+  revelarResposta(); // cartão básico: toque em qualquer lugar mostra o verso
+});
 document.getElementById("btn-mostrar").addEventListener("click", revelarResposta);
 document.getElementById("btn-sair-estudo").addEventListener("click", sairDoEstudo);
 document.getElementById("btn-fim-estudo").addEventListener("click", sairDoEstudo);
