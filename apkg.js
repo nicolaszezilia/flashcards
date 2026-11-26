@@ -78,7 +78,83 @@
       .filter(Boolean)
       .join("::");
   }
+  // ---------- Imagens ----------
+  const MAX_LADO = 800;            // maior lado da imagem, em pixels
+  const LIMITE_POR_CARD = 800000;  // soma das imagens de um cartão (o Firebase aceita ~1 MB por cartão)
+  const TIPOS = {
+    jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+    gif: "image/gif", webp: "image/webp", bmp: "image/bmp",
+  };
 
+  // Troca cada <img src="x"> por uma marca temporária com o nome do arquivo
+  function marcarImagens(html) {
+    return String(html || "").replace(
+      /<img\b[^>]*?\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))[^>]*>/gi,
+      (_, a, b, c) => "\uE000" + (a || b || c || "") + "\uE001"
+    );
+  }
+
+  // Acha o nome certo no mapa de mídia (o texto pode ter %20, &amp; etc.)
+  function descobrirNome(src, mapa) {
+    const bruto = src.replace(/&amp;/g, "&");
+    if (mapa.has(bruto)) return bruto;
+    try {
+      const d = decodeURIComponent(bruto);
+      if (mapa.has(d)) return d;
+    } catch (e) {}
+    return null;
+  }
+
+  // Reduz a imagem e devolve um texto "data:image/jpeg;base64,..."
+  async function comprimirImagem(bytes, mime) {
+    let bmp;
+    try {
+      bmp = await createImageBitmap(new Blob([bytes], { type: mime }));
+    } catch (e) {
+      return null;
+    }
+    const esc = Math.min(1, MAX_LADO / Math.max(bmp.width, bmp.height));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(bmp.width * esc));
+    c.height = Math.max(1, Math.round(bmp.height * esc));
+    const g = c.getContext("2d");
+    g.fillStyle = "#fff"; // fundo branco (PNG transparente viraria preto em JPEG)
+    g.fillRect(0, 0, c.width, c.height);
+    g.drawImage(bmp, 0, 0, c.width, c.height);
+    if (bmp.close) bmp.close();
+    let url = c.toDataURL("image/jpeg", 0.75);
+    if (url.length > 300000) url = c.toDataURL("image/jpeg", 0.5);
+    return url;
+  }
+
+  // Troca as marcas temporárias por [img:1], [img:2]... e junta as imagens na lista
+  async function resolverImagens(texto, carregar, ctx, imagens) {
+    const partes = texto.split(/\uE000([^\uE001]*)\uE001/);
+    let saida = "";
+    for (let i = 0; i < partes.length; i++) {
+      if (i % 2 === 0) { saida += partes[i]; continue; }
+      ctx.total++;
+      const url = await carregar(partes[i]);
+      const soma = imagens.reduce((s, u) => s + u.length, 0);
+      if (url && soma + url.length <= LIMITE_POR_CARD) {
+        let n = imagens.indexOf(url);
+        if (n < 0) { imagens.push(url); n = imagens.length - 1; }
+        saida += "[img:" + (n + 1) + "]";
+      } else {
+        ctx.falhas++;
+      }
+    }
+    return saida.trim();
+  }
+
+  // Identifica as imagens de um cartão (para não tratar cartões diferentes como repetidos)
+  function assinatura(imgs) {
+    return (imgs || []).map((u) => {
+      let h = 0;
+      for (let i = 0; i < u.length; i += 97) h = (h * 31 + u.charCodeAt(i)) | 0;
+      return u.length + ":" + h;
+    }).join("|");
+  }
   // ---------- Leitura do .apkg ----------
   async function lerApkg(arquivo) {
     const SQL = await prepararBibliotecas();
