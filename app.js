@@ -1058,7 +1058,15 @@ function sairDoEstudo() {
     renderizarCards();
   }
 }
-
+// Revela só a lacuna tocada; se foi a última, mostra os botões de nota
+function abrirLacuna(n) {
+  const card = sessao.fila[0];
+  sessao.abertas.add(n);
+  document.getElementById("estudo-frente").innerHTML =
+    formatarClozeEstudo(card.frente, sessao.abertas, false);
+  const total = (card.frente.match(REGEX_CLOZE) || []).length;
+  if (sessao.abertas.size >= total) revelarResposta();
+}
 document.getElementById("btn-estudar").addEventListener("click", () => iniciarEstudo(null, "deck"));
 document.getElementById("estudo-card").addEventListener("click", revelarResposta);
 document.getElementById("btn-mostrar").addEventListener("click", revelarResposta);
