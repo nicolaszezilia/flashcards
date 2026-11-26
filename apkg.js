@@ -1,4 +1,4 @@
-// apkg.js — importar arquivos .apkg do Anki (com subdecks, tags e cloze)
+// apkg.js — importar arquivos .apkg do Anki (com subdecks, tags, cloze e imagens)
 (function () {
   const URL_ZIP = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
   const BASE_SQL = "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/";
@@ -78,6 +78,7 @@
       .filter(Boolean)
       .join("::");
   }
+
   // ---------- Imagens ----------
   const MAX_LADO = 800;            // maior lado da imagem, em pixels
   const LIMITE_POR_CARD = 800000;  // soma das imagens de um cartão (o Firebase aceita ~1 MB por cartão)
@@ -155,8 +156,9 @@
       return u.length + ":" + h;
     }).join("|");
   }
+
   // ---------- Leitura do .apkg ----------
-   async function lerApkg(arquivo, aoProgresso) {
+  async function lerApkg(arquivo, aoProgresso) {
     const SQL = await prepararBibliotecas();
     let zip;
     try {
@@ -190,8 +192,8 @@
       let url = null;
       const ext = nomeImg.split(".").pop().toLowerCase();
       if (TIPOS[ext]) {
-        const bytes = await zip.file(mapaMidia.get(nomeImg)).async("uint8array");
-        url = await comprimirImagem(bytes, TIPOS[ext]);
+        const dadosImg = await zip.file(mapaMidia.get(nomeImg)).async("uint8array");
+        url = await comprimirImagem(dadosImg, TIPOS[ext]);
       }
       cache.set(nomeImg, url);
       ctx.feitas++;
@@ -252,13 +254,13 @@
 
   // ---------- Prévia ----------
   function mostrarPrevia() {
-        const { cartoes, ignoradas, imagens, falhas } = lido;
+    const { cartoes, ignoradas, imagens, falhas } = lido;
     const nomes = new Set(cartoes.map((c) => c.deck.toLowerCase()));
     let html =
       "<b>" + cartoes.length + (cartoes.length === 1 ? " cartão encontrado" : " cartões encontrados") +
       "</b> em " + nomes.size + (nomes.size === 1 ? " deck" : " decks");
     if (ignoradas) html += '<div class="imp-ex">' + ignoradas + " nota(s) vazia(s) ignorada(s).</div>";
-        if (imagens) html += '<div class="imp-ex">' + imagens + (imagens === 1 ? " imagem será importada." : " imagens serão importadas.") + "</div>";
+    if (imagens) html += '<div class="imp-ex">' + imagens + (imagens === 1 ? " imagem será importada." : " imagens serão importadas.") + "</div>";
     if (falhas) html += '<div class="imp-ex">' + falhas + " imagem(ns) não puderam ser lidas e ficarão de fora.</div>";
     cartoes.slice(0, 3).forEach((c) => {
       const f = c.frente.replace(/\n/g, " ").slice(0, 60);
@@ -296,12 +298,12 @@
       let repetidos = 0;
       for (const [deckId, lista] of grupos) {
         const existentes = await listarCards(deckId);
-                const jaTem = new Set(existentes.map((c) => chave(c.frente.trim() + assinatura(c.imagens), c.verso.trim())));
+        const jaTem = new Set(existentes.map((c) => chave(c.frente.trim() + assinatura(c.imagens), c.verso.trim())));
         lista.forEach((c) => {
           const k = chave(c.frente + assinatura(c.imagens), c.verso);
           if (jaTem.has(k)) { repetidos++; return; }
           jaTem.add(k);
-          n          novos.push({
+          novos.push({
             deckId, frente: c.frente, verso: c.verso, tags: c.tags,
             tipo: c.tipo, criadoEm: base + novos.length,
             ...(c.imagens && c.imagens.length ? { imagens: c.imagens } : {}),
@@ -345,7 +347,7 @@
     btnImportar.disabled = true;
     previa.textContent = "Lendo o arquivo… (na primeira vez pode demorar um pouco)";
     try {
-           lido = await lerApkg(arquivo, (t) => { previa.textContent = t; });
+      lido = await lerApkg(arquivo, (t) => { previa.textContent = t; });
       if (lido.cartoes.length === 0) {
         previa.textContent = "Não encontrei nenhum cartão utilizável neste arquivo.";
         return;
