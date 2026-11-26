@@ -40,6 +40,18 @@ function formatarCloze(t, revelar) {
   );
   return html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>");
 }
+// Cloze na tela de estudo: cada lacuna tem um número (data-i).
+// "abertas" = quais já foram reveladas; todas = true revela tudo
+function formatarClozeEstudo(t, abertas, todas) {
+  let i = 0;
+  const html = escaparHtml(t).replace(REGEX_CLOZE, (_, resp, dica) => {
+    const n = i++;
+    return todas || abertas.has(n)
+      ? '<span class="lacuna-resp" data-i="' + n + '">' + resp + "</span>"
+      : '<span class="lacuna" data-i="' + n + '">[' + (dica || "...") + "]</span>";
+  });
+  return html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>");
+}
 // Três pílulas: Novos / Aprender / Revisar (zerado fica apagado)
 function htmlContadores(c) {
   const chip = (cls, n, rotulo) =>
