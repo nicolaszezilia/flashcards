@@ -41,17 +41,20 @@ function temCloze(t) {
 }
 
 // revelar = false: mostra [...] ; revelar = true: mostra a resposta em destaque
-function formatarCloze(t, revelar) {
+function formatarCloze(t, revelar, imagens) {
   const html = escaparHtml(t).replace(REGEX_CLOZE, (_, resp, dica) =>
     revelar
       ? '<span class="lacuna-resp">' + resp + "</span>"
       : '<span class="lacuna">[' + (dica || "...") + "]</span>"
   );
-  return html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>");
+  return trocarImagens(
+    html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>"),
+    imagens
+  );
 }
 // Cloze na tela de estudo: cada lacuna tem um número (data-i).
 // "abertas" = quais já foram reveladas; todas = true revela tudo
-function formatarClozeEstudo(t, abertas, todas) {
+function formatarClozeEstudo(t, abertas, todas, imagens) {
   let i = 0;
   const html = escaparHtml(t).replace(REGEX_CLOZE, (_, resp, dica) => {
     const n = i++;
@@ -59,7 +62,10 @@ function formatarClozeEstudo(t, abertas, todas) {
       ? '<span class="lacuna-resp" data-i="' + n + '">' + resp + "</span>"
       : '<span class="lacuna" data-i="' + n + '">[' + (dica || "...") + "]</span>";
   });
-  return html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>");
+  return trocarImagens(
+    html.replace(/\*\*(.+?)\*\*/gs, "<strong>$1</strong>").replace(/\n/g, "<br>"),
+    imagens
+  );
 }
 // Três pílulas: Novos / Aprender / Revisar (zerado fica apagado)
 function htmlContadores(c) {
