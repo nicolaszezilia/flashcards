@@ -258,7 +258,8 @@
       "<b>" + cartoes.length + (cartoes.length === 1 ? " cartão encontrado" : " cartões encontrados") +
       "</b> em " + nomes.size + (nomes.size === 1 ? " deck" : " decks");
     if (ignoradas) html += '<div class="imp-ex">' + ignoradas + " nota(s) vazia(s) ignorada(s).</div>";
-    if (comImagem) html += '<div class="imp-ex">' + comImagem + " nota(s) têm imagem; as imagens não serão importadas.</div>";
+        if (imagens) html += '<div class="imp-ex">' + imagens + (imagens === 1 ? " imagem será importada." : " imagens serão importadas.") + "</div>";
+    if (falhas) html += '<div class="imp-ex">' + falhas + " imagem(ns) não puderam ser lidas e ficarão de fora.</div>";
     cartoes.slice(0, 3).forEach((c) => {
       const f = c.frente.replace(/\n/g, " ").slice(0, 60);
       const v = c.verso.replace(/\n/g, " ").slice(0, 60);
